@@ -1,0 +1,52 @@
+{
+  "categories": [
+    {
+      "id": "electronics",
+      "name": "Electronics",
+      "icon": "📱",
+      "description": "Latest gadgets and electronic devices"
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion",
+      "icon": "👕",
+      "description": "Stylish clothing and apparel"
+    },
+    {
+      "id": "footwear",
+      "name": "Footwear",
+      "icon": "👟",
+      "description": "Shoes and sneakers for every occasion"
+    },
+    {
+      "id": "beauty",
+      "name": "Beauty & Care",
+      "icon": "💅",
+      "description": "Beauty products and skincare"
+    },
+    {
+      "id": "home",
+      "name": "Home & Kitchen",
+      "icon": "🏠",
+      "description": "Everything for your home"
+    },
+    {
+      "id": "accessories",
+      "name": "Accessories",
+      "icon": "👜",
+      "description": "Stylish accessories and gadgets"
+    },
+    {
+      "id": "fitness",
+      "name": "Fitness",
+      "icon": "🏋️",
+      "description": "Sports and fitness equipment"
+    },
+    {
+      "id": "daily-essentials",
+      "name": "Daily Essentials",
+      "icon": "🛒",
+      "description": "Daily use essentials and supplies"
+    }
+  ]
+}
