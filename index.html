@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Online Shopping Made Easy</title>
+    <meta name="description" content="BazaarHub - Your trusted online marketplace for quality products at unbeatable prices. Shop electronics, fashion, footwear, beauty and more with Cash on Delivery.">
+    <meta name="keywords" content="online shopping, e-commerce, electronics, fashion, Meesho reseller">
+    <title>BazaarHub - Online Shopping Made Easy | Best Deals & Quality Products</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -14,14 +16,30 @@
             <div class="nav-logo">
                 <h1>🛍️ BazaarHub</h1>
             </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+                <button class="search-btn" onclick="performSearch()">🔍</button>
+            </div>
+
             <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#products" class="nav-link">Products</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li><a href="pages/login.html" class="nav-link">Login</a></li>
+                <li class="nav-item">
+                    <select id="categoryFilter" class="category-dropdown" onchange="filterByCategory()">
+                        <option value="">Categories</option>
+                    </select>
+                </li>
+                <li><a href="pages/wishlist.html" class="nav-link">❤️ Wishlist</a></li>
                 <li><a href="pages/cart.html" class="cart-link">🛒 Cart (<span id="cart-count">0</span>)</a></li>
+                <li><a href="pages/account.html" class="nav-link">👤 Account</a></li>
             </ul>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
@@ -30,65 +48,152 @@
         <div class="hero-content">
             <h2>Welcome to BazaarHub</h2>
             <p>Your one-stop shop for amazing deals on quality products</p>
-            <button class="cta-btn" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
+            <p class="hero-subtext">✅ 100% Secure • 📦 Fast Delivery • 🔄 Easy Returns • 💳 COD Available</p>
+            <button class="hero-btn" onclick="document.getElementById('trending').scrollIntoView({behavior: 'smooth'})">Explore Now</button>
         </div>
     </section>
 
-    <!-- Search & Filter Section -->
-    <section class="search-section">
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search for products..." class="search-bar">
-            <select id="categoryFilter" class="filter-select">
-                <option value="">All Categories</option>
-                <option value="electronics">Electronics</option>
-                <option value="fashion">Fashion</option>
-                <option value="home">Home & Kitchen</option>
-                <option value="beauty">Beauty & Personal Care</option>
-                <option value="sports">Sports & Outdoors</option>
-            </select>
-            <button class="search-btn" onclick="searchProducts()">Search</button>
+    <!-- Categories Section -->
+    <section class="categories-section" id="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be loaded here -->
+            </div>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section class="products" id="products">
-        <h2>Featured Products</h2>
-        <div class="products-grid" id="productsGrid">
-            <!-- Products will be loaded here by JavaScript -->
+    <!-- Trending Products Section -->
+    <section class="products-section" id="trending">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Trending Now</h2>
+                <p class="section-subtitle">Best-selling products loved by customers</p>
+            </div>
+            <div class="products-grid" id="trendingGrid">
+                <!-- Trending products will be loaded here -->
+            </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section class="about" id="about">
-        <h2>About BazaarHub</h2>
-        <div class="about-content">
-            <p>BazaarHub is your trusted online marketplace for quality products at unbeatable prices. We partner with Meesho to bring you the latest trends and best deals.</p>
-            <ul class="features">
-                <li>✅ Fast Delivery</li>
-                <li>✅ Quality Assured</li>
-                <li>✅ Easy Returns</li>
-                <li>✅ Secure Payments</li>
-                <li>✅ 24/7 Customer Support</li>
-            </ul>
+    <!-- Featured Products Section -->
+    <section class="products-section featured-section" id="featured">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">⭐ Featured Products</h2>
+                <p class="section-subtitle">Handpicked collection just for you</p>
+            </div>
+            <div class="products-grid" id="featuredGrid">
+                <!-- Featured products will be loaded here -->
+            </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <h2>Contact Us</h2>
-        <div class="contact-content">
-            <p>📧 Email: support@bazaarhub.com</p>
-            <p>📞 Phone: +91-XXXXXXXXXX</p>
-            <p>📍 Address: India</p>
+    <!-- New Arrivals Section -->
+    <section class="products-section" id="new-arrivals">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">✨ New Arrivals</h2>
+                <p class="section-subtitle">Check out our latest collection</p>
+            </div>
+            <div class="products-grid" id="newArrivalsGrid">
+                <!-- New arrivals will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop All Products Section -->
+    <section class="products-section all-products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">All Products</h2>
+                <a href="pages/shop.html" class="view-all-btn">View All →</a>
+            </div>
+            <div class="products-grid" id="allProductsGrid">
+                <!-- All products will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Signals Section -->
+    <section class="trust-signals">
+        <div class="container">
+            <h2 class="section-title">Why Choose BazaarHub?</h2>
+            <div class="trust-grid">
+                <div class="trust-card">
+                    <div class="trust-icon">✅</div>
+                    <h3>100% Secure Checkout</h3>
+                    <p>Your payment information is always safe and secure</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">📦</div>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your orders delivered within 3-5 business days</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">🔄</div>
+                    <h3>Easy Returns</h3>
+                    <p>7-day easy return policy - no questions asked</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">💳</div>
+                    <h3>Cash on Delivery</h3>
+                    <p>Pay when your order arrives - no credit card needed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Start Shopping?</h2>
+            <p>Discover thousands of products at unbeatable prices</p>
+            <button class="cta-btn" onclick="window.location.href='pages/shop.html'">Browse Products</button>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2024 BazaarHub. All rights reserved. | Powered by ROYALBUILDS</p>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About BazaarHub</h4>
+                    <p>Your trusted online marketplace for quality products at unbeatable prices. We partner with verified sellers to bring you the best deals.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="pages/shop.html">Shop</a></li>
+                        <li><a href="pages/cart.html">Cart</a></li>
+                        <li><a href="pages/my-orders.html">My Orders</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul class="footer-links">
+                        <li><a href="pages/shipping.html">Shipping Policy</a></li>
+                        <li><a href="pages/returns.html">Return Policy</a></li>
+                        <li><a href="pages/privacy.html">Privacy Policy</a></li>
+                        <li><a href="pages/terms.html">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p>📧 <a href="mailto:support@bazaarhub.com">support@bazaarhub.com</a></p>
+                    <p>📱 Available 24/7</p>
+                    <p>📍 Serving all of India</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BazaarHub. All rights reserved. | Powered by ROYALBUILDS</p>
+            </div>
+        </div>
     </footer>
 
     <!-- JavaScript Files -->
+    <script src="js/database.js"></script>
     <script src="js/products.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/main.js"></script>
