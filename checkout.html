@@ -1,1 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="BazaarHub secure checkout - Cash on Delivery"
+    >
+
+    <title>Checkout | BazaarHub</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #222;
+        }
+
+        .checkout-header {
+            background: #111827;
+            color: white;
+            padding: 18px 5%;
+        }
+
+        .checkout-header a {
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .checkout-container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        .checkout-title {
+            margin-bottom: 25px;
+            font-size: 30px;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        .checkout-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .checkout-card h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d5d9df;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #111827;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .payment-option {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .payment-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .payment-note {
+            margin-top: 8px;
+            margin-left: 25px;
+            font-size: 13px;
+            color: #777;
+        }
+
+        .upi-disabled {
+            opacity: 0.55;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item-image {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            background: #f1f2f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-size: 28px;
+        }
+
+        .order-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .order-item-quantity {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .order-item-price {
+            font-weight: 700;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 13px 0;
+            color: #555;
+        }
+
+        .summary-total {
+            border-top: 1px solid #ddd;
+            padding-top: 16px;
+            margin-top: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #111827;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 18px;
+        }
+
+        .place-order-btn:hover {
+            background: #000;
+        }
+
+        .secure-note {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .empty-checkout {
+            background: white;
+            padding: 50px 20px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .empty-checkout h2 {
+            margin-bottom: 12px;
+        }
+
+        .back-shop-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: #c62828;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 800px) {
+
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-title {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-container {
+                width: 94%;
+                margin-top: 20px;
+            }
+
+            .checkout-card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="checkout-header">
+    <a href="index.html">🛍️ BazaarHub</a>
+</header>
+
+
+<main class="checkout-container">
+
+    <h1 class="checkout-title">
+        Checkout
+    </h1>
+
+
+    <div id="checkoutContent">
+
+        <div class="checkout-layout">
+
+
+            <!-- CUSTOMER DETAILS -->
+
+            <div>
+
+                <section class="checkout-card">
+
+                    <h2>
+                        👤 Delivery Details
+                    </h2>
+
+                    <form id="checkoutForm">
+
+                        <div class="form-group">
+
+                            <label for="customerName">
+                                Full Name *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerName"
+                                placeholder="Enter your full name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="customerPhone">
+                                Mobile Number *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="customerPhone"
+                                placeholder="10-digit mobile number"
+                                maxlength="10"
+                                inputmode="numeric"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="customerAddress">
+                                Complete Address *
+                            </label>
+
+                            <textarea
+                                id="customerAddress"
+                                rows="4"
+                                placeholder="House/Flat No., Street, Area..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="customerCity">
+                                    City *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="customerCity"
+                                    placeholder="City"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="customerState">
+                                    State *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="customerState"
+                                    placeholder="State"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="customerPincode">
+                                Pincode *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="customerPincode"
+                                placeholder="6-digit pincode"
+                                maxlength="6"
+                                inputmode="numeric"
+                                required
+                            >
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+
+                <!-- PAYMENT -->
+
+                <section class="checkout-card">
+
+                    <h2>
+                        💳 Payment Method
+                    </h2>
+
+
+                    <div class="payment-option">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="COD"
+                                checked
+                            >
+
+                            💵 Cash on Delivery
+
+                        </label>
+
+                        <p class="payment-note">
+                            Pay when your order is delivered.
+                        </p>
+
+                    </div>
+
+
+                    <div class="payment-option upi-disabled">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="UPI"
+                                disabled
+                            >
+
+                            📱 UPI
+
+                        </label>
+
+                        <p class="payment-note">
+                            UPI payment will be available soon.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- ORDER SUMMARY -->
+
+            <div>
+
+                <section class="checkout-card">
+
+                    <h2>
+                        🛒 Order Summary
+                    </h2>
+
+                    <div id="orderItems"></div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <strong id="subtotal">
+                            ₹0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Delivery
+                        </span>
+
+                        <strong>
+                            FREE
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-row summary-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <span id="grandTotal">
+                            ₹0
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="place-order-btn"
+                        id="placeOrderBtn"
+                    >
+                        📦 Place Order — COD
+                    </button>
+
+
+                    <p class="secure-note">
+                        🔒 Your order details are handled securely.
+                    </p>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="js/cart.js"></script>
+
+
+<script>
+
+    // ========================================================
+    // CHECKOUT SYSTEM
+    // ========================================================
+
+    let checkoutItems = [];
+
+
+    // --------------------------------------------------------
+    // Escape HTML
+    // --------------------------------------------------------
+
+    function checkoutEscape(value) {
+
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+    }
+
+
+    // --------------------------------------------------------
+    // Get image
+    // --------------------------------------------------------
+
+    function checkoutImage(product) {
+
+        let image = '';
+
+        if (
+            Array.isArray(product.images) &&
+            product.images.length > 0
+        ) {
+            image = product.images[0];
+        }
+
+        else if (product.thumbnail) {
+            image = product.thumbnail;
+        }
+
+        else if (product.image) {
+            image = product.image;
+        }
+
+
+        if (
+            image &&
+            (
+                image.startsWith('http') ||
+                image.startsWith('/') ||
+                image.startsWith('./') ||
+                image.startsWith('../') ||
+                /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(image)
+            )
+        ) {
+
+            return `
+                <img
+                    src="${checkoutEscape(image)}"
+                    alt="Product"
+                >
+            `;
+
+        }
+
+
+        return checkoutEscape(
+            image || '🛍️'
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Load checkout items
+    // --------------------------------------------------------
+
+    function loadCheckoutItems() {
+
+        const buyNow =
+            sessionStorage.getItem(
+                'bazaarhubBuyNow'
+            );
+
+
+        if (buyNow) {
+
+            try {
+
+                const item =
+                    JSON.parse(buyNow);
+
+                checkoutItems = [item];
+
+                return;
+
+            } catch (error) {
+
+                console.error(
+                    'Invalid Buy Now data'
+                );
+
+            }
+
+        }
+
+
+        checkoutItems =
+            getCart();
+
+    }
+
+
+    // --------------------------------------------------------
+    // Render order
+    // --------------------------------------------------------
+
+    function renderCheckout() {
+
+        const itemsContainer =
+            document.getElementById(
+                'orderItems'
+            );
+
+
+        if (
+            !checkoutItems ||
+            checkoutItems.length === 0
+        ) {
+
+            document.getElementById(
+                'checkoutContent'
+            ).innerHTML = `
+
+                <div class="empty-checkout">
+
+                    <h2>
+                        🛒 Your cart is empty
+                    </h2>
+
+                    <p>
+                        Add some products before checkout.
+                    </p>
+
+                    <a
+                        href="index.html"
+                        class="back-shop-btn"
+                    >
+                        Continue Shopping
+                    </a>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        itemsContainer.innerHTML =
+            checkoutItems.map(item => {
+
+                const price =
+                    Number(item.price) || 0;
+
+                const quantity =
+                    Number(item.quantity) || 1;
+
+                return `
+
+                    <div class="order-item">
+
+                        <div class="order-item-image">
+
+                            ${checkoutImage(item)}
+
+                        </div>
+
+                        <div class="order-item-info">
+
+                            <div class="order-item-title">
+
+                                ${checkoutEscape(
+                                    item.title ||
+                                    item.name ||
+                                    'Product'
+                                )}
+
+                            </div>
+
+                            <div class="order-item-quantity">
+
+                                Quantity:
+                                ${quantity}
+
+                            </div>
+
+                        </div>
+
+                        <div class="order-item-price">
+
+                            ₹${formatPrice(
+                                price * quantity
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join('');
+
+
+        const total =
+            checkoutItems.reduce(
+                (sum, item) =>
+                    sum +
+                    (
+                        (Number(item.price) || 0) *
+                        (Number(item.quantity) || 1)
+                    ),
+                0
+            );
+
+
+        document.getElementById(
+            'subtotal'
+        ).textContent =
+            `₹${formatPrice(total)}`;
+
+
+        document.getElementById(
+            'grandTotal'
+        ).textContent =
+            `₹${formatPrice(total)}`;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Validate phone
+    // --------------------------------------------------------
+
+    function validatePhone(phone) {
+
+        return /^[6-9]\d{9}$/.test(
+            phone
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Validate pincode
+    // --------------------------------------------------------
+
+    function validatePincode(pincode) {
+
+        return /^\d{6}$/.test(
+            pincode
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Place order
+    // --------------------------------------------------------
+
+    function placeOrder() {
+
+        const form =
+            document.getElementById(
+                'checkoutForm'
+            );
+
+
+        if (!form.checkValidity()) {
+
+            form.reportValidity();
+
+            return;
+
+        }
+
+
+        const name =
+            document.getElementById(
+                'customerName'
+            ).value.trim();
+
+
+        const phone =
+            document.getElementById(
+                'customerPhone'
+            ).value.trim();
+
+
+        const address =
+            document.getElementById(
+                'customerAddress'
+            ).value.trim();
+
+
+        const city =
+            document.getElementById(
+                'customerCity'
+            ).value.trim();
+
+
+        const state =
+            document.getElementById(
+                'customerState'
+            ).value.trim();
+
+
+        const pincode =
+            document.getElementById(
+                'customerPincode'
+            ).value.trim();
+
+
+        if (!validatePhone(phone)) {
+
+            alert(
+                'Please enter a valid 10-digit Indian mobile number.'
+            );
+
+            return;
+
+        }
+
+
+        if (!validatePincode(pincode)) {
+
+            alert(
+                'Please enter a valid 6-digit pincode.'
+            );
+
+            return;
+
+        }
+
+
+        !checkoutItems ||
+    checkoutItems.length === 0
+) {
+    alert('Your cart is empty. Please add a product before checkout.');
+    window.location.href = 'cart.html';
+    return;
+}
+
+// Create order object
+const orderData = {
+    id: 'ORD' + Date.now(),
+    customer: {
+        name: name,
+        phone: phone,
+        address: address,
+        city: city,
+        state: state,
+        pincode: pincode
+    },
+    items: checkoutItems,
+    paymentMethod: 'cod',
+    total: checkoutItems.reduce(
+        (total, item) =>
+            total + (Number(item.price) || 0) * (Number(item.quantity) || 1),
+        0
+    ),
+    status: 'pending',
+    createdAt: new Date().toISOString()
+};
+
+// Save order locally
+const existingOrders =
+    JSON.parse(localStorage.getItem('bazaarhubOrders')) || [];
+
+existingOrders.push(orderData);
+
+localStorage.setItem(
+    'bazaarhubOrders',
+    JSON.stringify(existingOrders)
+);
+
+// Save latest order separately
+localStorage.setItem(
+    'bazaarhubOrder',
+    JSON.stringify(orderData)
+);
+
+// Clear cart after successful order
+localStorage.removeItem('bazaarhubCart');
+
+// Show success message
+alert(
+    '🎉 Order placed successfully!\\n\\n' +
+    'Order ID: ' + orderData.id
+);
+
+// Go to order confirmation page
+window.location.href = 'order-confirmation.html';
+
+});
