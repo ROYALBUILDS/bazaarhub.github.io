@@ -1,1 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="View product details, price, specifications and availability on BazaarHub."
+    >
+
+    <title>Product | BazaarHub</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+
+    <style>
+        .product-detail-page {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 25px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #f7f7f7;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-placeholder {
+            font-size: 100px;
+        }
+
+        .detail-category {
+            color: #777;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .detail-title {
+            font-size: 32px;
+            line-height: 1.25;
+            margin: 0 0 12px;
+        }
+
+        .detail-rating {
+            margin-bottom: 20px;
+        }
+
+        .detail-price {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .detail-mrp {
+            color: #888;
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+
+        .detail-discount {
+            display: inline-block;
+            margin-left: 10px;
+            color: #008a4c;
+            font-weight: 700;
+        }
+
+        .detail-description {
+            color: #555;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+
+        .detail-section {
+            margin-top: 22px;
+        }
+
+        .detail-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .spec-list {
+            padding-left: 20px;
+            line-height: 1.9;
+        }
+
+        .option-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .option {
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 7px 12px;
+            font-size: 13px;
+        }
+
+        .detail-stock {
+            margin: 18px 0;
+            font-size: 14px;
+        }
+
+        .detail-cart-button {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            background: #ff6f00;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .detail-cart-button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .error-box {
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        @media (max-width: 700px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                padding: 15px;
+            }
+
+            .detail-title {
+                font-size: 25px;
+            }
+
+            .detail-price {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <div class="nav-logo">
+                <h1>🛍️ BazaarHub</h1>
+            </div>
+
+            <ul class="nav-menu">
+                <li>
+                    <a href="../index.html" class="nav-link">
+                        🏠 Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="cart.html" class="cart-link">
+                        🛒 Cart (<span id="cart-count">0</span>)
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <main class="product-detail-page">
+
+        <a href="../index.html" class="back-link">
+            ← Back to Shopping
+        </a>
+
+        <div id="productContainer">
+            <div class="error-box">
+                Loading product...
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/cart.js"></script>
+
+    <script>
+
+        let currentProduct = null;
+
+        function escapeHTML(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getProductImage(product) {
+
+            if (
+                Array.isArray(product.images) &&
+                product.images.length > 0
+            ) {
+                return product.images[0];
+            }
+
+            if (product.thumbnail) {
+                return product.thumbnail;
+            }
+
+            if (product.image) {
+                return product.image;
+            }
+
+            return '';
+        }
+
+        function isImageSource(value) {
+
+            if (!value) return false;
+
+            return (
+                value.startsWith('http://') ||
+                value.startsWith('https://') ||
+                /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(value)
+            );
+        }
+
+        function getDiscount(price, mrp) {
+
+            if (!price || !mrp || mrp <= price) {
+                return 0;
+            }
+
+            return Math.round(
+                ((mrp - price) / mrp) * 100
+            );
+        }
+
+        async function loadProduct() {
+
+            const container =
+                document.getElementById('productContainer');
+
+            const params =
+                new URLSearchParams(window.location.search);
+
+            const productId =
+                params.get('id');
+
+            if (!productId) {
+                showError('Product ID not found.');
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch('../data/products.json');
+
+                if (!response.ok) {
+                    throw new Error('Unable to load products');
+                }
+
+                const data =
+                    await response.json();
+
+                const products =
+                    Array.isArray(data.products)
+                        ? data.products
+                        : [];
+
+                currentProduct =
+                    products.find(
+                        product =>
+                            Number(product.id) ===
+                            Number(productId)
+                    );
+
+                if (!currentProduct) {
+                    showError('Product not found.');
+                    return;
+                }
+
+                renderProduct(currentProduct);
+
+            } catch (error) {
+
+                console.error(error);
+
+                showError(
+                    'Unable to load this product.'
+                );
+            }
+        }
+
+        function renderProduct(product) {
+
+            const container =
+                document.getElementById('productContainer');
+
+            const price =
+                Number(product.price) || 0;
+
+            const mrp =
+                Number(product.mrp || product.originalPrice) || 0;
+
+            const discount =
+                getDiscount(price, mrp);
+
+            const image =
+                getProductImage(product);
+
+            let imageHTML;
+
+            if (isImageSource(image)) {
+
+                imageHTML = `
+                    <img
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(product.title)}"
+                    >
+                `;
+
+            } else {
+
+                imageHTML = `
+                    <div class="detail-placeholder">
+                        ${escapeHTML(image || '🛍️')}
+                    </div>
+                `;
+            }
+
+            const specifications =
+                Array.isArray(product.specifications)
+                    ? product.specifications
+                    : [];
+
+            const colors =
+                Array.isArray(product.colors)
+                    ? product.colors
+                    : [];
+
+            const sizes =
+                Array.isArray(product.sizes)
+                    ? product.sizes
+                    : [];
+
+            const stock =
+                Number(product.stock);
+
+            const outOfStock =
+                Number.isFinite(stock) && stock <= 0;
+
+            document.title =
+                `${product.title} | BazaarHub`;
+
+            container.innerHTML = `
+
+                <div class="product-detail">
+
+                    <div class="product-detail-image">
+                        ${imageHTML}
+                    </div>
+
+                    <div class="product-detail-info">
+
+                        <div class="detail-category">
+                            ${escapeHTML(
+                                product.category || 'Product'
+                            )}
+                        </div>
+
+                        <h1 class="detail-title">
+                            ${escapeHTML(
+                                product.title || product.name
+                            )}
+                        </h1>
+
+                        <div class="detail-rating">
+                            ⭐ ${escapeHTML(
+                                product.rating || '4.5'
+                            )}
+
+                            ${
+                                product.reviews
+                                    ? `(${escapeHTML(
+                                        product.reviews
+                                    )} reviews)`
+                                    : ''
+                            }
+                        </div>
+
+                        <div>
+
+                            <span class="detail-price">
+                                ₹${price.toLocaleString('en-IN')}
+                            </span>
+
+                            ${
+                                mrp > price
+                                    ? `
+                                        <span class="detail-mrp">
+                                            ₹${mrp.toLocaleString('en-IN')}
+                                        </span>
+                                    `
+                                    : ''
+                            }
+
+                            ${
+                                discount > 0
+                                    ? `
+                                        <span class="detail-discount">
+                                            ${discount}% OFF
+                                        </span>
+                                    `
+                                    : ''
+                            }
+
+                        </div>
+
+                        <p class="detail-description">
+                            ${escapeHTML(
+                                product.description || ''
+                            )}
+                        </p>
+
+                        ${
+                            colors.length
+                                ? `
+                                    <div class="detail-section">
+                                        <h3>Available Colors</h3>
+
+                                        <div class="option-list">
+                                            ${colors.map(
+                                                color =>
+                                                    `<span class="option">
+                                                        ${escapeHTML(color)}
+                                                    </span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            sizes.length
+                                ? `
+                                    <div class="detail-section">
+                                        <h3>Available Sizes</h3>
+
+                                        <div class="option-list">
+                                            ${sizes.map(
+                                                size =>
+                                                    `<span class="option">
+                                                        ${escapeHTML(size)}
+                                                    </span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            specifications.length
+                                ? `
+                                    <div class="detail-section">
+                                        <h3>Specifications</h3>
+
+                                        <ul class="spec-list">
+                                            ${specifications.map(
+                                                spec =>
+                                                    `<li>
+                                                        ${escapeHTML(spec)}
+                                                    </li>`
+                                            ).join('')}
+                                        </ul>
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                        ${
+                            Number.isFinite(stock)
+                                ? `
+                                    <div class="detail-stock">
+                                        ${
+                                            stock > 0
+                                                ? `📦 ${stock} items available`
+                                                : '❌ Out of stock'
+                                        }
+                                    </div>
+                                `
+                                : ''
+                        }
+
+                        <button
+                            class="detail-cart-button"
+                            onclick="addProductToCart()"
+                            ${outOfStock ? 'disabled' : ''}
+                        >
+                            ${
+                                outOfStock
+                                    ? 'Out of Stock'
+                                    : '🛒 Add to Cart'
+                            }
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function addProductToCart() {
+
+            if (!currentProduct) return;
+
+            if (typeof addToCart === 'function') {
+
+                addToCart(
+                    Number(currentProduct.id)
+                );
+
+            } else {
+
+                alert(
+                    'Cart is currently unavailable.'
+                );
+            }
+        }
+
+        function showError(message) {
+
+            document.getElementById(
+                'productContainer'
+            ).innerHTML = `
+                <div class="error-box">
+                    <h2>😕 ${escapeHTML(message)}</h2>
+                    <br>
+                    <a href="../index.html">
+                        ← Back to BazaarHub
+                    </a>
+                </div>
+            `;
+        }
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                if (
+                    typeof updateCartCount ===
+                    'function'
+                ) {
+                    updateCartCount();
+                }
+
+                loadProduct();
+            }
+        );
+
+    </script>
+
+</body>
+</html>
