@@ -3,461 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation - BazaarHub</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/responsive.css">
+
+    <meta
+        name="description"
+        content="BazaarHub order confirmation"
+    >
+
+    <title>Order Confirmed | BazaarHub</title>
+
     <style>
-        .confirmation-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .confirmation-card {
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #111827;
+            padding: 18px 5%;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .success-card {
             background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
-            padding: 3rem;
+            border-radius: 16px;
+            padding: 35px 25px;
             text-align: center;
-            margin-bottom: 2rem;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
         }
 
         .success-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: bounce 0.6s ease-in-out;
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #dcfce7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
         }
 
-        .confirmation-title {
-            color: #004E89;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        h1 {
+            color: #15803d;
+            margin-bottom: 10px;
         }
 
-        .confirmation-subtitle {
+        .message {
             color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
         }
 
-        .order-number {
-            background: #F8F9FA;
-            padding: 1rem;
-            border-radius: 5px;
-            margin: 2rem 0;
-            font-size: 1.1rem;
+        .order-id {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
         }
 
-        .order-number strong {
-            color: #FF6B35;
+        .order-id span {
+            display: block;
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 5px;
         }
 
-        .order-details {
-            background: #F8F9FA;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
+        .order-id strong {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .details {
             text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .details h2 {
+            font-size: 19px;
+            margin-bottom: 15px;
         }
 
         .detail-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .detail-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
+        .detail-row span:first-child {
+            color: #777;
         }
 
-        .detail-label {
-            color: #666;
+        .detail-row span:last-child {
             font-weight: 600;
+            text-align: right;
         }
 
-        .detail-value {
-            color: #333;
-            font-weight: 600;
+        .items {
+            margin-top: 20px;
         }
 
-        .order-items {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .order-items h3 {
-            color: #004E89;
-            margin-bottom: 1.5rem;
-        }
-
-        .item-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #E0E0E0;
-            align-items: center;
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
         }
 
         .item-name {
             font-weight: 600;
         }
 
-        .item-qty {
-            text-align: center;
+        .item-quantity {
+            color: #777;
+            font-size: 13px;
+            margin-top: 4px;
         }
 
-        .item-total {
-            text-align: right;
-            color: #FF6B35;
-            font-weight: 600;
-        }
-
-        .order-total {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            padding: 1.5rem;
-            border-top: 2px solid #E0E0E0;
-            font-size: 1.2rem;
+        .item-price {
             font-weight: 700;
-            color: #FF6B35;
         }
 
-        .payment-status {
-            background: #F0F8FF;
-            border: 2px solid #00A651;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
+        .total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 2px solid #ddd;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cod {
+            margin-top: 20px;
+            padding: 14px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            color: #9a3412;
+            font-weight: 600;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
             text-align: center;
         }
 
-        .payment-status h4 {
-            color: #00A651;
-            margin-bottom: 0.5rem;
-        }
-
-        .payment-status p {
-            color: #333;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-
-        .action-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: #FF6B35;
+        .shop-btn {
+            background: #111827;
             color: white;
         }
 
-        .btn-primary:hover {
-            background: #E55A1F;
+        .orders-btn {
+            background: #e5e7eb;
+            color: #111827;
         }
 
-        .btn-secondary {
-            background: #004E89;
-            color: white;
+        .error {
+            text-align: center;
+            padding: 40px 20px;
         }
 
-        .btn-secondary:hover {
-            background: #003A66;
-        }
+        @media (max-width: 550px) {
 
-        .shipping-info {
-            background: #FFFBEA;
-            border-left: 4px solid #FFA500;
-            padding: 1.5rem;
-            border-radius: 5px;
-            margin: 2rem 0;
-        }
-
-        .shipping-info h4 {
-            color: #FFA500;
-            margin-bottom: 0.5rem;
-        }
-
-        .shipping-info p {
-            color: #666;
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .detail-row {
-                grid-template-columns: 1fr;
+            .container {
+                margin-top: 20px;
             }
 
-            .item-row,
-            .order-total {
-                grid-template-columns: 1fr;
-                text-align: left;
+            .success-card {
+                padding: 28px 18px;
             }
 
-            .item-total,
-            .order-total {
-                text-align: left;
-            }
-
-            .action-buttons {
+            .buttons {
                 flex-direction: column;
             }
 
-            .action-btn {
-                width: 100%;
+            .detail-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .detail-row span:last-child {
+                text-align: left;
             }
         }
     </style>
 </head>
+
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>🛍️ BazaarHub</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="../index.html" class="nav-link">Home</a></li>
-                <li><a href="../index.html#products" class="nav-link">Products</a></li>
-                <li><a href="cart.html" class="nav-link">Cart</a></li>
-            </ul>
-        </div>
-    </nav>
 
-    <!-- Confirmation Section -->
-    <div class="confirmation-container">
-        <div class="confirmation-card">
-            <div class="success-icon">✅</div>
-            <h2 class="confirmation-title">Order Confirmed!</h2>
-            <p class="confirmation-subtitle">Thank you for your purchase. Your order has been successfully placed.</p>
-            <div class="order-number">
-                Order Number: <strong id="orderNumber"></strong>
-            </div>
-        </div>
+<header class="header">
+    <a href="../index.html">
+        🛍️ BazaarHub
+    </a>
+</header>
 
-        <!-- Order Summary -->
-        <div class="order-details">
-            <h3 style="color: #004E89; margin-bottom: 1.5rem;">Order Details</h3>
-            
-            <div class="detail-row">
-                <div>
-                    <div class="detail-label">📦 Order Date</div>
-                    <div class="detail-value" id="orderDate"></div>
-                </div>
-                <div>
-                    <div class="detail-label">💳 Payment Method</div>
-                    <div class="detail-value" id="paymentMethod"></div>
-                </div>
-            </div>
+<main class="container">
 
-            <div class="detail-row">
-                <div>
-                    <div class="detail-label">👤 Customer Name</div>
-                    <div class="detail-value" id="customerName"></div>
-                </div>
-                <div>
-                    <div class="detail-label">📧 Email</div>
-                    <div class="detail-value" id="customerEmail"></div>
-                </div>
-            </div>
+    <div id="confirmation"></div>
 
-            <div class="detail-row">
-                <div>
-                    <div class="detail-label">📱 Phone</div>
-                    <div class="detail-value" id="customerPhone"></div>
-                </div>
-                <div>
-                    <div class="detail-label">🏠 City</div>
-                    <div class="detail-value" id="customerCity"></div>
-                </div>
-            </div>
+</main>
 
-            <div class="detail-row">
-                <div>
-                    <div class="detail-label">📍 Full Address</div>
-                    <div class="detail-value" id="customerAddress"></div>
-                </div>
-                <div>
-                    <div class="detail-label">📮 Zip Code</div>
-                    <div class="detail-value" id="customerZip"></div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Payment Status -->
-        <div class="payment-status" id="paymentStatus"></div>
+<script>
 
-        <!-- Shipping Information -->
-        <div class="shipping-info">
-            <h4>📦 Shipping Information</h4>
-            <p>Your order will be shipped within 1-2 business days. You will receive tracking information via email and SMS.</p>
-            <p style="margin-top: 0.5rem;"><strong>Estimated Delivery: 3-5 business days</strong></p>
-        </div>
+    function escapeHTML(value) {
 
-        <!-- Order Items -->
-        <div class="order-items">
-            <h3>Order Items</h3>
-            <div id="orderItemsList"></div>
-        </div>
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <button class="action-btn btn-primary" onclick="window.location.href='../index.html'">Continue Shopping</button>
-            <button class="action-btn btn-secondary" onclick="downloadInvoice()">Download Invoice</button>
-        </div>
-    </div>
+    }
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 BazaarHub. All rights reserved. | Powered by ROYALBUILDS</p>
-    </footer>
 
-    <script>
-        // Display order confirmation
-        function displayOrderConfirmation() {
-            const order = JSON.parse(localStorage.getItem('bazaarhubOrder'));
+    function money(value) {
 
-            if (!order) {
-                window.location.href = '../index.html';
-                return;
-            }
+        return Number(value || 0)
+            .toLocaleString('en-IN');
 
-            // Order Details
-            document.getElementById('orderNumber').textContent = order.orderNumber;
-            document.getElementById('orderDate').textContent = new Date(order.orderDate).toLocaleDateString('en-IN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('paymentMethod').textContent = order.payment.method === 'cod' ? 'Cash on Delivery (COD)' : 'UPI Payment';
+    }
 
-            // Customer Details
-            document.getElementById('customerName').textContent = `${order.customer.firstName} ${order.customer.lastName}`;
-            document.getElementById('customerEmail').textContent = order.customer.email;
-            document.getElementById('customerPhone').textContent = order.customer.phone;
-            document.getElementById('customerCity').textContent = order.customer.city;
-            document.getElementById('customerAddress').textContent = `${order.customer.address}, ${order.customer.state}`;
-            document.getElementById('customerZip').textContent = order.customer.zipcode;
 
-            // Payment Status
-            const paymentStatusDiv = document.getElementById('paymentStatus');
-            if (order.payment.method === 'cod') {
-                paymentStatusDiv.innerHTML = `
-                    <h4>💵 Payment Status: Pending</h4>
-                    <p>You will pay <strong>₹${order.total + order.tax}</strong> to the delivery executive upon delivery.</p>
-                `;
-            } else {
-                paymentStatusDiv.innerHTML = `
-                    <h4>💳 Payment Initiated</h4>
-                    <p>Payment request has been sent to <strong>${order.payment.upiId}</strong></p>
-                    <p style="margin-top: 0.5rem;">Please complete the payment to confirm your order.</p>
-                `;
-            }
+    function loadConfirmation() {
 
-            // Order Items
-            const itemsList = document.getElementById('orderItemsList');
-            let itemsHTML = '';
-            order.items.forEach(item => {
-                itemsHTML += `
-                    <div class="item-row">
-                        <div>
-                            <span style="font-size: 2rem; margin-right: 0.5rem;">${item.image}</span>
-                            <span class="item-name">${item.name}</span>
-                        </div>
-                        <div class="item-qty">Qty: ${item.quantity}</div>
-                        <div class="item-total">₹${item.price * item.quantity}</div>
+        const savedOrder =
+            localStorage.getItem(
+                'bazaarhubOrder'
+            );
+
+        const container =
+            document.getElementById(
+                'confirmation'
+            );
+
+
+        if (!savedOrder) {
+
+            container.innerHTML = `
+
+                <div class="success-card error">
+
+                    <div class="success-icon">
+                        🛒
                     </div>
-                `;
-            });
 
-            itemsHTML += `
-                <div class="order-total">
-                    <div>Total</div>
-                    <div></div>
-                    <div>₹${order.total + order.tax}</div>
+                    <h1>
+                        No Order Found
+                    </h1>
+
+                    <p class="message">
+                        We could not find your latest order.
+                    </p>
+
+                    <a
+                        href="../index.html"
+                        class="btn shop-btn"
+                    >
+                        Continue Shopping
+                    </a>
+
                 </div>
+
             `;
 
-            itemsList.innerHTML = itemsHTML;
+            return;
         }
 
-        // Download Invoice
-        function downloadInvoice() {
-            const order = JSON.parse(localStorage.getItem('bazaarhubOrder'));
-            
-            let invoiceContent = `
-BazaarHub Invoice
-Order Number: ${order.orderNumber}
-Date: ${new Date(order.orderDate).toLocaleDateString('en-IN')}
 
-CUSTOMER DETAILS
-${order.customer.firstName} ${order.customer.lastName}
-Email: ${order.customer.email}
-Phone: ${order.customer.phone}
-Address: ${order.customer.address}, ${order.customer.city}, ${order.customer.state} ${order.customer.zipcode}
+        let order;
 
-ORDERED ITEMS
-`;
+        try {
 
-            order.items.forEach(item => {
-                invoiceContent += `${item.name} x${item.quantity} - ₹${item.price * item.quantity}\n`;
-            });
+            order =
+                JSON.parse(savedOrder);
 
-            invoiceContent += `
-Subtotal: ₹${order.total}
-Tax (5%): ₹${order.tax}
-Total Amount: ₹${order.total + order.tax}
+        } catch (error) {
 
-PAYMENT METHOD
-${order.payment.method === 'cod' ? 'Cash on Delivery' : 'UPI Payment'}
+            container.innerHTML = `
 
-Thank you for your order!
+                <div class="success-card error">
+
+                    <h1>
+                        Something went wrong
+                    </h1>
+
+                    <p class="message">
+                        Unable to load your order.
+                    </p>
+
+                    <a
+                        href="../index.html"
+                        class="btn shop-btn"
+                    >
+                        Back to Shop
+                    </a>
+
+                </div>
+
             `;
 
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(invoiceContent));
-            element.setAttribute('download', `BazaarHub_Invoice_${order.orderNumber}.txt`);
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
+            return;
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', displayOrderConfirmation);
-    </script>
+
+        const customer =
+            order.customer || {};
+
+        const items =
+            Array.isArray(order.items)
+                ? order.items
+                : [];
+
+
+        const total =
+            Number(order.total) || 0;
+
+
+        const orderDate =
+            order.createdAt
+                ? new Date(order.createdAt)
+                    .toLocaleString('en-IN')
+                : 'N/A';
+
+
+        const itemsHTML =
+            items.map(item => {
+
+                const name =
+                    item.title ||
+                    item.name ||
+                    'Product';
+
+                const quantity =
+                    Number(item.quantity) || 1;
+
+                const price =
+                    Number(item.price) || 0;
+
+                return `
+
+                    <div class="item">
+
+                        <div>
+
+                            <div class="item-name">
+                                ${escapeHTML(name)}
+                            </div>
+
+                            <div class="item-quantity">
+                                Quantity: ${quantity}
+                            </div>
+
+                        </div>
+
+                        <div class="item-price">
+                            ₹${money(price * quantity)}
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join('');
+
+
+        container.innerHTML = `
+
+            <div class="success-card">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <h1>
+                    Order Placed Successfully!
+                </h1>
+
+                <p class="message">
+                    Thank you for shopping with BazaarHub.
+                    Your order has been received.
+                </p>
+
+
+                <div class="order-id">
+
+                    <span>
+                        Order ID
+                    </span>
+
+                    <strong>
+                        ${escapeHTML(order.id || 'ORD-UNKNOWN')}
+                    </strong>
+
+                </div>
+
+
+                <div class="details">
+
+                    <h2>
+                        📦 Delivery Details
+                    </h2>
+
+                    <div class="detail-row">
+
+                        <span>
+                            Name
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.name || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            Mobile
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.phone || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            Address
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.address || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            City
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.city || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            State
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.state || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            Pincode
+                        </span>
+
+                        <span>
+                            ${escapeHTML(customer.pincode || '')}
+                        </span>
+
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span>
+                            Order Date
+                        </span>
+
+                        <span>
+                            ${escapeHTML(orderDate)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="items">
+
+                    <h2 style="margin-top:25px;">
+                        🛒 Ordered Products
+                    </h2>
+
+                    ${itemsHTML}
+
+                </div>
+
+
+                <div class="total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span>
+                        ₹${money(total)}
+                    </span>
+
+                </div>
+
+
+                <div class="cod">
+                    💵 Payment: Cash on Delivery
+                </div>
+
+
+                <div class="buttons">
+
+                    <a
+                        href="../index.html"
+                        class="btn shop-btn"
+                    >
+                        Continue Shopping
+                    </a>
+
+                    <a
+                        href="orders.html"
+                        class="btn orders-btn"
+                    >
+                        📋 My Orders
+                    </a>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        loadConfirmation
+    );
+
+</script>
+
 </body>
 </html>
