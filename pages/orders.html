@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -267,7 +266,6 @@
     </a>
 </header>
 
-
 <main class="container">
 
     <a
@@ -284,7 +282,6 @@
     <div id="ordersContainer"></div>
 
 </main>
-
 
 <script>
 
@@ -317,6 +314,173 @@
 
 
     // =====================================================
+    // GET CUSTOMER
+    // =====================================================
+
+    function getCustomer(order) {
+
+        if (
+            order &&
+            order.customer &&
+            typeof order.customer === 'object'
+        ) {
+            return order.customer;
+        }
+
+        return {};
+
+    }
+
+
+    // =====================================================
+    // GET ORDER ID
+    // =====================================================
+
+    function getOrderId(order) {
+
+        return (
+            order.id ||
+            order.orderId ||
+            order.orderID ||
+            order.order_id ||
+            order.reference ||
+            'ORD-' + Date.now()
+        );
+
+    }
+
+
+    // =====================================================
+    // GET ORDER DATE
+    // =====================================================
+
+    function getOrderDate(order) {
+
+        const possibleDates = [
+
+            order.createdAt,
+            order.orderDate,
+            order.date,
+            order.timestamp,
+            order.created_at
+
+        ];
+
+        for (
+            let i = 0;
+            i < possibleDates.length;
+            i++
+        ) {
+
+            const value =
+                possibleDates[i];
+
+            if (!value) {
+                continue;
+            }
+
+            const date =
+                new Date(value);
+
+            if (!isNaN(date.getTime())) {
+
+                return date.toLocaleString(
+                    'en-IN'
+                );
+
+            }
+
+        }
+
+        return 'Date not available';
+
+    }
+
+
+    // =====================================================
+    // GET CUSTOMER NAME
+    // =====================================================
+
+    function getCustomerName(
+        order,
+        customer
+    ) {
+
+        return (
+            customer.name ||
+            customer.fullName ||
+            customer.customerName ||
+            order.customerName ||
+            order.name ||
+            'Name not available'
+        );
+
+    }
+
+
+    // =====================================================
+    // GET PHONE
+    // =====================================================
+
+    function getCustomerPhone(
+        order,
+        customer
+    ) {
+
+        return (
+            customer.phone ||
+            customer.mobile ||
+            customer.mobileNumber ||
+            order.phone ||
+            order.mobile ||
+            'N/A'
+        );
+
+    }
+
+
+    // =====================================================
+    // GET ADDRESS
+    // =====================================================
+
+    function getCustomerAddress(
+        order,
+        customer
+    ) {
+
+        const addressParts = [
+
+            customer.address ||
+            order.address,
+
+            customer.city ||
+            order.city,
+
+            customer.state ||
+            order.state,
+
+            customer.pincode ||
+            customer.pinCode ||
+            order.pincode ||
+            order.pinCode
+
+        ].filter(function(value) {
+
+            return (
+                value !== undefined &&
+                value !== null &&
+                String(value).trim() !== ''
+            );
+
+        });
+
+
+        return addressParts.join(', ');
+
+    }
+
+
+    // =====================================================
     // LOAD ORDERS
     // =====================================================
 
@@ -327,12 +491,11 @@
                 'ordersContainer'
             );
 
-
         let orders = [];
 
 
         // -------------------------------------------------
-        // Get all orders
+        // Load all orders
         // -------------------------------------------------
 
         try {
@@ -342,12 +505,10 @@
                     'bazaarhubOrders'
                 );
 
-
             if (savedOrders) {
 
                 const parsed =
                     JSON.parse(savedOrders);
-
 
                 if (Array.isArray(parsed)) {
 
@@ -368,7 +529,7 @@
 
 
         // -------------------------------------------------
-        // Fallback to latest order
+        // Add latest order if orders list is empty
         // -------------------------------------------------
 
         if (orders.length === 0) {
@@ -380,12 +541,12 @@
                         'bazaarhubOrder'
                     );
 
-
                 if (latestOrder) {
 
                     const parsedOrder =
-                        JSON.parse(latestOrder);
-
+                        JSON.parse(
+                            latestOrder
+                        );
 
                     if (parsedOrder) {
 
@@ -448,7 +609,7 @@
 
 
         // -------------------------------------------------
-        // Show newest order first
+        // Newest order first
         // -------------------------------------------------
 
         orders.sort(
@@ -456,12 +617,18 @@
 
                 const dateA =
                     new Date(
-                        a.createdAt || 0
+                        a.createdAt ||
+                        a.orderDate ||
+                        a.date ||
+                        0
                     ).getTime();
 
                 const dateB =
                     new Date(
-                        b.createdAt || 0
+                        b.createdAt ||
+                        b.orderDate ||
+                        b.date ||
+                        0
                     ).getTime();
 
                 return dateB - dateA;
@@ -471,11 +638,12 @@
 
 
         // -------------------------------------------------
-        // Render orders
+        // Render
         // -------------------------------------------------
 
-        container.innerHTML =
-            `<div class="orders-list">
+        container.innerHTML = `
+
+            <div class="orders-list">
 
                 ${
                     orders.map(
@@ -489,19 +657,21 @@
                     ).join('')
                 }
 
-            </div>`;
+            </div>
+
+        `;
 
     }
 
 
     // =====================================================
-    // RENDER ONE ORDER
+    // RENDER ORDER
     // =====================================================
 
     function renderOrder(order) {
 
         const customer =
-            order.customer || {};
+            getCustomer(order);
 
 
         const items =
@@ -511,8 +681,11 @@
 
 
         const orderId =
-            order.id ||
-            'ORD-UNKNOWN';
+            getOrderId(order);
+
+
+        const orderDate =
+            getOrderDate(order);
 
 
         const status =
@@ -520,64 +693,62 @@
             'pending';
 
 
-        let orderDate = 'N/A';
+        const customerName =
+            getCustomerName(
+                order,
+                customer
+            );
 
 
-        if (order.createdAt) {
-
-            const date =
-                new Date(
-                    order.createdAt
-                );
-
-
-            if (!isNaN(date.getTime())) {
-
-                orderDate =
-                    date.toLocaleString(
-                        'en-IN'
-                    );
-
-            }
-
-        }
-
-
-        const total =
-            Number(order.total) || 0;
-
-
-        // -------------------------------------------------
-        // Customer address
-        // -------------------------------------------------
-
-        const addressParts = [
-
-            customer.address,
-
-            customer.city,
-
-            customer.state,
-
-            customer.pincode
-
-        ].filter(Boolean);
+        const customerPhone =
+            getCustomerPhone(
+                order,
+                customer
+            );
 
 
         const address =
-            addressParts.join(', ');
+            getCustomerAddress(
+                order,
+                customer
+            );
+
+
+        const total =
+            Number(order.total) ||
+
+            items.reduce(
+                function(sum, item) {
+
+                    return (
+                        sum +
+                        (
+                            Number(
+                                item.price
+                            ) || 0
+                        ) *
+                        (
+                            Number(
+                                item.quantity
+                            ) || 1
+                        )
+                    );
+
+                },
+                0
+            );
 
 
         // -------------------------------------------------
-        // Items
+        // Products
         // -------------------------------------------------
 
-        const itemsHTML =
+        let itemsHTML = '';
 
-            items.length > 0
 
-                ?
+        if (items.length > 0) {
 
+            itemsHTML =
                 items.map(
                     function(item) {
 
@@ -610,17 +781,22 @@
                                 <div>
 
                                     <div class="item-name">
-                                        ${escapeHTML(name)}
+                                        ${escapeHTML(
+                                            name
+                                        )}
                                     </div>
 
                                     <div class="item-quantity">
-                                        Quantity: ${quantity}
+                                        Quantity:
+                                        ${quantity}
                                     </div>
 
                                 </div>
 
                                 <div class="item-price">
-                                    ₹${money(itemTotal)}
+                                    ₹${money(
+                                        itemTotal
+                                    )}
                                 </div>
 
                             </div>
@@ -628,17 +804,19 @@
                         `;
 
                     }
-                ).join('')
+                ).join('');
 
-                :
+        } else {
 
-                `
+            itemsHTML = `
 
-                    <p style="color:#777;">
-                        No product details available.
-                    </p>
+                <p style="color:#777;">
+                    No product details available.
+                </p>
 
-                `;
+            `;
+
+        }
 
 
         // -------------------------------------------------
@@ -654,12 +832,20 @@
                     <div>
 
                         <div class="order-id">
+
                             Order ID:
-                            ${escapeHTML(orderId)}
+                            ${escapeHTML(
+                                orderId
+                            )}
+
                         </div>
 
                         <div class="order-date">
-                            ${escapeHTML(orderDate)}
+
+                            ${escapeHTML(
+                                orderDate
+                            )}
+
                         </div>
 
                     </div>
@@ -668,10 +854,11 @@
                     <div class="status">
 
                         ${escapeHTML(
-                            status
+                            String(status)
                                 .charAt(0)
                                 .toUpperCase() +
-                            status.slice(1)
+                            String(status)
+                                .slice(1)
                         )}
 
                     </div>
@@ -686,26 +873,32 @@
                     </h3>
 
                     <p>
+
                         <strong>
                             ${escapeHTML(
-                                customer.name ||
-                                'Customer'
+                                customerName
                             )}
                         </strong>
+
                     </p>
 
                     <p>
-                        📱 ${escapeHTML(
-                            customer.phone ||
-                            'N/A'
+
+                        📱
+                        ${escapeHTML(
+                            customerPhone
                         )}
+
                     </p>
 
                     <p>
-                        📍 ${escapeHTML(
+
+                        📍
+                        ${escapeHTML(
                             address ||
                             'Address not available'
                         )}
+
                     </p>
 
                 </div>
@@ -725,11 +918,16 @@
                 <div class="order-bottom">
 
                     <div class="payment">
+
                         💵 Cash on Delivery
+
                     </div>
 
                     <div class="total">
-                        Total: ₹${money(total)}
+
+                        Total:
+                        ₹${money(total)}
+
                     </div>
 
                 </div>
@@ -739,8 +937,7 @@
         `;
 
     }
-
-
+    
     // =====================================================
     // INITIALIZE
     // =====================================================
@@ -753,4 +950,4 @@
 </script>
 
 </body>
-  </html>
+</html>
