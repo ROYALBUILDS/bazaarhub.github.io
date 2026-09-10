@@ -261,7 +261,7 @@
 
     function loadConfirmation() {
 
-        const savedOrder =
+       savedOrder =
             localStorage.getItem(
                 'bazaarhubOrder'
             );
@@ -298,7 +298,72 @@
                     </a>
 
                 </div>
+const container =
+    document.getElementById('confirmation');
 
+let order = null;
+
+// Latest order from all orders
+try {
+    const savedOrders =
+        localStorage.getItem('bazaarhubOrders');
+
+    if (savedOrders) {
+        const orders = JSON.parse(savedOrders);
+
+        if (Array.isArray(orders) && orders.length > 0) {
+            order = orders[orders.length - 1];
+        }
+    }
+} catch (error) {
+    console.error('Unable to load orders:', error);
+}
+
+// Fallback to single latest order
+if (!order) {
+    try {
+        const savedOrder =
+            localStorage.getItem('bazaarhubOrder');
+
+        if (savedOrder) {
+            order = JSON.parse(savedOrder);
+        }
+    } catch (error) {
+        console.error('Unable to load latest order:', error);
+    }
+}
+
+if (!order) {
+
+    container.innerHTML = `
+
+        <div class="success-card error">
+
+            <div class="success-icon">
+                🛒
+            </div>
+
+            <h1>
+                No Order Found
+            </h1>
+
+            <p class="message">
+                We could not find your latest order.
+            </p>
+
+            <a
+                href="../index.html"
+                class="btn shop-btn"
+            >
+                Continue Shopping
+            </a>
+
+        </div>
+
+    `;
+
+    return;
+    }
             `;
 
             return;
@@ -311,7 +376,7 @@
 
             order =
                 JSON.parse(savedOrder);
-
+    
         } catch (error) {
 
             container.innerHTML = `
