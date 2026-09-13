@@ -142,6 +142,7 @@
             align-items: center;
             overflow: hidden;
             font-size: 28px;
+            flex-shrink: 0;
         }
 
         .order-item-image img {
@@ -166,6 +167,7 @@
 
         .order-item-price {
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .summary-row {
@@ -201,6 +203,11 @@
             background: #000;
         }
 
+        .place-order-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .secure-note {
             text-align: center;
             color: #666;
@@ -229,12 +236,6 @@
             text-decoration: none;
         }
 
-        .error-message {
-            color: #c62828;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
         @media (max-width: 800px) {
 
             .checkout-layout {
@@ -260,6 +261,14 @@
             .checkout-card {
                 padding: 18px;
             }
+
+            .order-item {
+                align-items: flex-start;
+            }
+
+            .order-item-price {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -267,7 +276,9 @@
 <body>
 
 <header class="checkout-header">
-    <a href="index.html">🛍️ BazaarHub</a>
+    <a href="index.html">
+        🛍️ BazaarHub
+    </a>
 </header>
 
 
@@ -281,7 +292,6 @@
     <div id="checkoutContent">
 
         <div class="checkout-layout">
-
 
             <!-- CUSTOMER DETAILS -->
 
@@ -541,16 +551,16 @@
 
 <script>
 
-    // ========================================================
+    // =====================================================
     // CHECKOUT SYSTEM
-    // ========================================================
+    // =====================================================
 
     let checkoutItems = [];
 
 
-    // --------------------------------------------------------
-    // Escape HTML
-    // --------------------------------------------------------
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
 
     function checkoutEscape(value) {
 
@@ -564,27 +574,46 @@
     }
 
 
-    // --------------------------------------------------------
-    // Get image
-    // --------------------------------------------------------
+    // =====================================================
+    // MONEY FORMAT
+    // =====================================================
+
+    function checkoutMoney(value) {
+
+        return Number(value || 0)
+            .toLocaleString('en-IN');
+
+    }
+
+
+    // =====================================================
+    // GET PRODUCT IMAGE
+    // =====================================================
 
     function checkoutImage(product) {
 
         let image = '';
 
+
         if (
             Array.isArray(product.images) &&
             product.images.length > 0
         ) {
+
             image = product.images[0];
+
         }
 
         else if (product.thumbnail) {
+
             image = product.thumbnail;
+
         }
 
         else if (product.image) {
+
             image = product.image;
+
         }
 
 
@@ -616,9 +645,9 @@
     }
 
 
-    // --------------------------------------------------------
-    // Load checkout items
-    // --------------------------------------------------------
+    // =====================================================
+    // LOAD CHECKOUT ITEMS
+    // =====================================================
 
     function loadCheckoutItems() {
 
@@ -627,6 +656,8 @@
                 'bazaarhubBuyNow'
             );
 
+
+        // BUY NOW
 
         if (buyNow) {
 
@@ -639,10 +670,13 @@
 
                 return;
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
-                    'Invalid Buy Now data'
+                    'Invalid Buy Now data:',
+                    error
                 );
 
             }
@@ -650,15 +684,51 @@
         }
 
 
-        checkoutItems =
-            getCart();
+        // NORMAL CART
+
+        try {
+
+            if (
+                typeof getCart === 'function'
+            ) {
+
+                checkoutItems = getCart();
+
+            }
+
+            else {
+
+                const savedCart =
+                    localStorage.getItem(
+                        'bazaarhubCart'
+                    );
+
+                checkoutItems =
+                    savedCart
+                        ? JSON.parse(savedCart)
+                        : [];
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                'Unable to load cart:',
+                error
+            );
+
+            checkoutItems = [];
+
+        }
 
     }
 
 
-    // --------------------------------------------------------
-    // Render order
-    // --------------------------------------------------------
+    // =====================================================
+    // RENDER CHECKOUT
+    // =====================================================
 
     function renderCheckout() {
 
@@ -704,68 +774,82 @@
 
 
         itemsContainer.innerHTML =
-            checkoutItems.map(item => {
+            checkoutItems.map(
+                function(item) {
 
-                const price =
-                    Number(item.price) || 0;
+                    const price =
+                        Number(item.price) || 0;
 
-                const quantity =
-                    Number(item.quantity) || 1;
 
-                return `
+                    const quantity =
+                        Number(item.quantity) || 1;
 
-                    <div class="order-item">
 
-                        <div class="order-item-image">
+                    return `
 
-                            ${checkoutImage(item)}
+                        <div class="order-item">
 
-                        </div>
+                            <div class="order-item-image">
 
-                        <div class="order-item-info">
+                                ${checkoutImage(item)}
 
-                            <div class="order-item-title">
+                            </div>
 
-                                ${checkoutEscape(
-                                    item.title ||
-                                    item.name ||
-                                    'Product'
+
+                            <div class="order-item-info">
+
+                                <div class="order-item-title">
+
+                                    ${checkoutEscape(
+                                        item.title ||
+                                        item.name ||
+                                        'Product'
+                                    )}
+
+                                </div>
+
+
+                                <div class="order-item-quantity">
+
+                                    Quantity:
+                                    ${quantity}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="order-item-price">
+
+                                ₹${checkoutMoney(
+                                    price * quantity
                                 )}
 
                             </div>
 
-                            <div class="order-item-quantity">
-
-                                Quantity:
-                                ${quantity}
-
-                            </div>
-
                         </div>
 
-                        <div class="order-item-price">
+                    `;
 
-                            ₹${formatPrice(
-                                price * quantity
-                            )}
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }).join('');
+                }
+            ).join('');
 
 
         const total =
             checkoutItems.reduce(
-                (sum, item) =>
-                    sum +
-                    (
-                        (Number(item.price) || 0) *
-                        (Number(item.quantity) || 1)
-                    ),
+                function(sum, item) {
+
+                    const price =
+                        Number(item.price) || 0;
+
+                    const quantity =
+                        Number(item.quantity) || 1;
+
+                    return sum + (
+                        price * quantity
+                    );
+
+                },
                 0
             );
 
@@ -773,46 +857,67 @@
         document.getElementById(
             'subtotal'
         ).textContent =
-            `₹${formatPrice(total)}`;
+            `₹${checkoutMoney(total)}`;
 
 
         document.getElementById(
             'grandTotal'
         ).textContent =
-            `₹${formatPrice(total)}`;
+            `₹${checkoutMoney(total)}`;
 
     }
 
 
-    // --------------------------------------------------------
-    // Validate phone
-    // --------------------------------------------------------
+    // =====================================================
+    // VALIDATE PHONE
+    // =====================================================
 
     function validatePhone(phone) {
 
-        return /^[6-9]\d{9}$/.test(
-            phone
-        );
+        return /^[6-9]\d{9}$/.test(phone);
 
     }
 
 
-    // --------------------------------------------------------
-    // Validate pincode
-    // --------------------------------------------------------
+    // =====================================================
+    // VALIDATE PINCODE
+    // =====================================================
 
     function validatePincode(pincode) {
 
-        return /^\d{6}$/.test(
-            pincode
-        );
+        return /^\d{6}$/.test(pincode);
 
     }
 
 
-    // --------------------------------------------------------
-    // Place order
-    // --------------------------------------------------------
+    // =====================================================
+    // GENERATE ORDER ID
+    // =====================================================
+
+    function generateOrderId() {
+
+        const now = new Date();
+
+        const year =
+            now.getFullYear();
+
+        const month =
+            String(now.getMonth() + 1).padStart(2, '0');
+
+        const day =
+            String(now.getDate()).padStart(2, '0');
+
+        const random =
+            Math.floor(1000 + Math.random() * 9000);
+
+        return `BH-${year}${month}${day}-${random}`;
+
+    }
+
+
+    // =====================================================
+    // PLACE ORDER
+    // =====================================================
 
     function placeOrder() {
 
@@ -867,6 +972,8 @@
             ).value.trim();
 
 
+        // PHONE VALIDATION
+
         if (!validatePhone(phone)) {
 
             alert(
@@ -877,6 +984,8 @@
 
         }
 
+
+        // PINCODE VALIDATION
 
         if (!validatePincode(pincode)) {
 
@@ -889,63 +998,289 @@
         }
 
 
-        !checkoutItems ||
-    checkoutItems.length === 0
-) {
-    alert('Your cart is empty. Please add a product before checkout.');
-    window.location.href = 'pages/cart.html';
-    return;
-}
+        // CHECK CART
 
-// Create order object
-const orderData = {
-    id: 'ORD' + Date.now(),
-    customer: {
-        name: name,
-        phone: phone,
-        address: address,
-        city: city,
-        state: state,
-        pincode: pincode
-    },
-    items: checkoutItems,
-    paymentMethod: 'cod',
-    total: checkoutItems.reduce(
-        (total, item) =>
-            total + (Number(item.price) || 0) * (Number(item.quantity) || 1),
-        0
-    ),
-    status: 'pending',
-    createdAt: new Date().toISOString()
-};
+        if (
+            !checkoutItems ||
+            checkoutItems.length === 0
+        ) {
 
-// Save order locally
-const existingOrders =
-    JSON.parse(localStorage.getItem('bazaarhubOrders')) || [];
+            alert(
+                'Your cart is empty.'
+            );
 
-existingOrders.push(orderData);
+            return;
 
-localStorage.setItem(
-    'bazaarhubOrders',
-    JSON.stringify(existingOrders)
-);
+        }
 
-// Save latest order separately
-localStorage.setItem(
-    'bazaarhubOrder',
-    JSON.stringify(orderData)
-);
 
-// Clear cart after successful order
-localStorage.removeItem('bazaarhubCart');
+        // =================================================
+        // CALCULATE TOTAL
+        // =================================================
 
-// Show success message
-alert(
-    '🎉 Order placed successfully!\\n\\n' +
-    'Order ID: ' + orderData.id
-);
+        const total =
+            checkoutItems.reduce(
+                function(sum, item) {
 
-// Go to order confirmation page
-window.location.href = 'pages/order-confirmation.html';
+                    const price =
+                        Number(item.price) || 0;
 
-});
+                    const quantity =
+                        Number(item.quantity) || 1;
+
+                    return sum + (
+                        price * quantity
+                    );
+
+                },
+                0
+            );
+
+
+        // =================================================
+        // CREATE ORDER
+        // =================================================
+
+        const order = {
+
+            id:
+                generateOrderId(),
+
+            createdAt:
+                new Date().toISOString(),
+
+            status:
+                'pending',
+
+            paymentMethod:
+                'COD',
+
+            customer: {
+
+                name:
+                    name,
+
+                phone:
+                    phone,
+
+                address:
+                    address,
+
+                city:
+                    city,
+
+                state:
+                    state,
+
+                pincode:
+                    pincode
+
+            },
+
+            items:
+                checkoutItems.map(
+                    function(item) {
+
+                        return {
+
+                            id:
+                                item.id || '',
+
+                            title:
+                                item.title ||
+                                item.name ||
+                                'Product',
+
+                            price:
+                                Number(item.price) || 0,
+
+                            quantity:
+                                Number(item.quantity) || 1,
+
+                            image:
+                                item.image ||
+                                item.thumbnail ||
+                                (
+                                    Array.isArray(item.images)
+                                        ? item.images[0]
+                                        : ''
+                                )
+
+                        };
+
+                    }
+                ),
+
+            total:
+                total
+
+        };
+
+
+        // =================================================
+        // SAVE LATEST ORDER
+        // =================================================
+
+        try {
+
+            localStorage.setItem(
+                'bazaarhubOrder',
+                JSON.stringify(order)
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                'Unable to save latest order:',
+                error
+            );
+
+        }
+
+
+        // =================================================
+        // SAVE ALL ORDERS
+        // =================================================
+
+        try {
+
+            let orders = [];
+
+            const savedOrders =
+                localStorage.getItem(
+                    'bazaarhubOrders'
+                );
+
+
+            if (savedOrders) {
+
+                try {
+
+                    const parsed =
+                        JSON.parse(savedOrders);
+
+                    if (
+                        Array.isArray(parsed)
+                    ) {
+
+                        orders = parsed;
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    orders = [];
+
+                }
+
+            }
+
+
+            orders.push(order);
+
+
+            localStorage.setItem(
+                'bazaarhubOrders',
+                JSON.stringify(orders)
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                'Unable to save orders:',
+                error
+            );
+
+        }
+
+
+        // =================================================
+        // CLEAR CART
+        // =================================================
+
+        const buyNow =
+            sessionStorage.getItem(
+                'bazaarhubBuyNow'
+            );
+
+
+        if (!buyNow) {
+
+            try {
+
+                localStorage.removeItem(
+                    'bazaarhubCart'
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    'Unable to clear cart:',
+                    error
+                );
+
+            }
+
+        }
+
+
+        // REMOVE BUY NOW DATA
+
+        sessionStorage.removeItem(
+            'bazaarhubBuyNow'
+        );
+
+
+        // =================================================
+        // GO TO ORDER CONFIRMATION
+        // =================================================
+
+        window.location.href =
+            'pages/order-confirmation.html';
+
+    }
+
+
+    // =====================================================
+    // INITIALIZE CHECKOUT
+    // =====================================================
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            loadCheckoutItems();
+
+            renderCheckout();
+
+
+            const placeOrderBtn =
+                document.getElementById(
+                    'placeOrderBtn'
+                );
+
+
+            if (placeOrderBtn) {
+
+                placeOrderBtn.addEventListener(
+                    'click',
+                    placeOrder
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
