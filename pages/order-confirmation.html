@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <meta
         name="description"
@@ -12,6 +18,7 @@
     <title>Order Confirmed | BazaarHub</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -122,6 +129,12 @@
 
         .items {
             margin-top: 20px;
+            text-align: left;
+        }
+
+        .items h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
 
         .item {
@@ -144,6 +157,7 @@
 
         .item-price {
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .total {
@@ -218,17 +232,25 @@
             .detail-row span:last-child {
                 text-align: left;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <header class="header">
+
     <a href="../index.html">
         🛍️ BazaarHub
     </a>
+
 </header>
+
 
 <main class="container">
 
@@ -239,206 +261,431 @@
 
 <script>
 
-    function escapeHTML(value) {
 
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+// =====================================================
+// ESCAPE HTML
+// =====================================================
 
-    }
+function escapeHTML(value) {
 
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 
-    function money(value) {
-
-        return Number(value || 0)
-            .toLocaleString('en-IN');
-
-    }
-
-
-    function loadConfirmation() {
-
-       savedOrder =
-            localStorage.getItem(
-                'bazaarhubOrder'
-            );
-
-        const container =
-            document.getElementById(
-                'confirmation'
-            );
-
-
-        if (!savedOrder) {
-
-            container.innerHTML = `
-
-                <div class="success-card error">
-
-                    <div class="success-icon">
-                        🛒
-                    </div>
-
-                    <h1>
-                        No Order Found
-                    </h1>
-
-                    <p class="message">
-                        We could not find your latest order.
-                    </p>
-
-                    <a
-                        href="../index.html"
-                        class="btn shop-btn"
-                    >
-                        Continue Shopping
-                    </a>
-
-                </div>
-const container =
-    document.getElementById('confirmation');
-
-let order = null;
-
-// Latest order from all orders
-try {
-    const savedOrders =
-        localStorage.getItem('bazaarhubOrders');
-
-    if (savedOrders) {
-        const orders = JSON.parse(savedOrders);
-
-        if (Array.isArray(orders) && orders.length > 0) {
-            order = orders[orders.length - 1];
-        }
-    }
-} catch (error) {
-    console.error('Unable to load orders:', error);
 }
 
-// Fallback to single latest order
-if (!order) {
+
+// =====================================================
+// MONEY FORMAT
+// =====================================================
+
+function money(value) {
+
+    return Number(value || 0)
+        .toLocaleString('en-IN');
+
+}
+
+
+// =====================================================
+// GENERATE ORDER ID
+// =====================================================
+
+function generateOrderId() {
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(now.getMonth() + 1)
+            .padStart(2, '0');
+
+    const day =
+        String(now.getDate())
+            .padStart(2, '0');
+
+    const random =
+        Math.floor(
+            1000 + Math.random() * 9000
+        );
+
+    return `BH-${year}${month}${day}-${random}`;
+
+}
+
+
+// =====================================================
+// GET LATEST ORDER
+// =====================================================
+
+function getLatestOrder() {
+
+    let order = null;
+
+    // -------------------------------------------------
+    // First try all orders
+    // -------------------------------------------------
+
     try {
-        const savedOrder =
-            localStorage.getItem('bazaarhubOrder');
 
-        if (savedOrder) {
-            order = JSON.parse(savedOrder);
+        const savedOrders =
+            localStorage.getItem(
+                'bazaarhubOrders'
+            );
+
+        if (savedOrders) {
+
+            const orders =
+                JSON.parse(savedOrders);
+
+            if (
+                Array.isArray(orders) &&
+                orders.length > 0
+            ) {
+
+                // Find latest order using createdAt
+                const sortedOrders =
+                    [...orders].sort(
+                        function(a, b) {
+
+                            const dateA =
+                                new Date(
+                                    a.createdAt || 0
+                                ).getTime();
+
+                            const dateB =
+                                new Date(
+                                    b.createdAt || 0
+                                ).getTime();
+
+                            return dateB - dateA;
+
+                        }
+                    );
+
+                order =
+                    sortedOrders[0];
+
+            }
+
         }
+
     } catch (error) {
-        console.error('Unable to load latest order:', error);
+
+        console.error(
+            'Unable to load orders:',
+            error
+        );
+
     }
-}
-
-if (!order) {
-
-    container.innerHTML = `
-
-        <div class="success-card error">
-
-            <div class="success-icon">
-                🛒
-            </div>
-
-            <h1>
-                No Order Found
-            </h1>
-
-            <p class="message">
-                We could not find your latest order.
-            </p>
-
-            <a
-                href="../index.html"
-                class="btn shop-btn"
-            >
-                Continue Shopping
-            </a>
-
-        </div>
-
-    `;
-
-    return;
-    }
-            `;
-
-            return;
-        }
 
 
-        let order;
+    // -------------------------------------------------
+    // Fallback to latest single order
+    // -------------------------------------------------
+
+    if (!order) {
 
         try {
 
-            order =
-                JSON.parse(savedOrder);
-    
+            const savedOrder =
+                localStorage.getItem(
+                    'bazaarhubOrder'
+                );
+
+            if (savedOrder) {
+
+                order =
+                    JSON.parse(savedOrder);
+
+            }
+
         } catch (error) {
 
-            container.innerHTML = `
+            console.error(
+                'Unable to load latest order:',
+                error
+            );
 
-                <div class="success-card error">
+        }
 
-                    <h1>
-                        Something went wrong
-                    </h1>
+    }
 
-                    <p class="message">
-                        Unable to load your order.
-                    </p>
 
-                    <a
-                        href="../index.html"
-                        class="btn shop-btn"
-                    >
-                        Back to Shop
-                    </a>
+    return order;
 
-                </div>
+}
 
-            `;
 
-            return;
+// =====================================================
+// SAVE REPAIRED ORDER
+// =====================================================
+
+function saveOrder(order) {
+
+    try {
+
+        // Save latest order
+        localStorage.setItem(
+            'bazaarhubOrder',
+            JSON.stringify(order)
+        );
+
+
+        // Save inside all orders
+        let orders = [];
+
+        const savedOrders =
+            localStorage.getItem(
+                'bazaarhubOrders'
+            );
+
+        if (savedOrders) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(savedOrders);
+
+                if (Array.isArray(parsed)) {
+
+                    orders = parsed;
+
+                }
+
+            } catch (error) {
+
+                orders = [];
+
+            }
+
         }
 
 
-        const customer =
-            order.customer || {};
+        // Find same order
+        const index =
+            orders.findIndex(
+                function(item) {
 
-        const items =
-            Array.isArray(order.items)
-                ? order.items
-                : [];
+                    return (
+                        item.id === order.id
+                    );
+
+                }
+            );
 
 
-        const total =
-            Number(order.total) || 0;
+        if (index >= 0) {
+
+            orders[index] = order;
+
+        } else {
+
+            orders.push(order);
+
+        }
 
 
-        const orderDate =
+        localStorage.setItem(
+            'bazaarhubOrders',
+            JSON.stringify(orders)
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Unable to save order:',
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// LOAD CONFIRMATION
+// =====================================================
+
+function loadConfirmation() {
+
+    const container =
+        document.getElementById(
+            'confirmation'
+        );
+
+
+    let order =
+        getLatestOrder();
+
+
+    // -------------------------------------------------
+    // No order
+    // -------------------------------------------------
+
+    if (!order) {
+
+        container.innerHTML = `
+
+            <div class="success-card error">
+
+                <div class="success-icon">
+                    🛒
+                </div>
+
+                <h1>
+                    No Order Found
+                </h1>
+
+                <p class="message">
+                    We could not find your latest order.
+                </p>
+
+                <a
+                    href="../index.html"
+                    class="btn shop-btn"
+                >
+                    Continue Shopping
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // Make sure customer exists
+    // -------------------------------------------------
+
+    order.customer =
+        order.customer || {};
+
+
+    // -------------------------------------------------
+    // Generate missing Order ID
+    // -------------------------------------------------
+
+    if (
+        !order.id ||
+        order.id === 'ORD-UNKNOWN'
+    ) {
+
+        order.id =
+            generateOrderId();
+
+    }
+
+
+    // -------------------------------------------------
+    // Generate missing order date
+    // -------------------------------------------------
+
+    if (!order.createdAt) {
+
+        order.createdAt =
+            new Date().toISOString();
+
+    }
+
+
+    // -------------------------------------------------
+    // Save repaired order
+    // -------------------------------------------------
+
+    saveOrder(order);
+
+
+    // -------------------------------------------------
+    // Customer
+    // -------------------------------------------------
+
+    const customer =
+        order.customer;
+
+
+    // -------------------------------------------------
+    // Items
+    // -------------------------------------------------
+
+    const items =
+        Array.isArray(order.items)
+            ? order.items
+            : [];
+
+
+    // -------------------------------------------------
+    // Total
+    // -------------------------------------------------
+
+    const total =
+        Number(order.total) || 0;
+
+
+    // -------------------------------------------------
+    // Date
+    // -------------------------------------------------
+
+    let orderDate =
+        'N/A';
+
+    const date =
+        new Date(
             order.createdAt
-                ? new Date(order.createdAt)
-                    .toLocaleString('en-IN')
-                : 'N/A';
+        );
+
+    if (!isNaN(date.getTime())) {
+
+        orderDate =
+            date.toLocaleString(
+                'en-IN'
+            );
+
+    }
 
 
-        const itemsHTML =
-            items.map(item => {
+    // =================================================
+    // ITEMS HTML
+    // =================================================
+
+    const itemsHTML =
+
+        items.length > 0
+
+        ?
+
+        items.map(
+            function(item) {
 
                 const name =
                     item.title ||
                     item.name ||
                     'Product';
 
+
                 const quantity =
-                    Number(item.quantity) || 1;
+                    Number(
+                        item.quantity
+                    ) || 1;
+
 
                 const price =
-                    Number(item.price) || 0;
+                    Number(
+                        item.price
+                    ) || 0;
+
+
+                const itemTotal =
+                    price * quantity;
+
 
                 return `
 
@@ -457,200 +704,249 @@ if (!order) {
                         </div>
 
                         <div class="item-price">
-                            ₹${money(price * quantity)}
+                            ₹${money(itemTotal)}
                         </div>
 
                     </div>
 
                 `;
 
-            }).join('');
+            }
+        ).join('')
+
+        :
+
+        `
+
+            <p style="color:#777;">
+                No product details available.
+            </p>
+
+        `;
 
 
-        container.innerHTML = `
+    // =================================================
+    // DISPLAY
+    // =================================================
 
-            <div class="success-card">
+    container.innerHTML = `
 
-                <div class="success-icon">
-                    ✓
-                </div>
+        <div class="success-card">
 
-                <h1>
-                    Order Placed Successfully!
-                </h1>
-
-                <p class="message">
-                    Thank you for shopping with BazaarHub.
-                    Your order has been received.
-                </p>
+            <div class="success-icon">
+                ✓
+            </div>
 
 
-                <div class="order-id">
-
-                    <span>
-                        Order ID
-                    </span>
-
-                    <strong>
-                        ${escapeHTML(order.id || 'ORD-UNKNOWN')}
-                    </strong>
-
-                </div>
+            <h1>
+                Order Placed Successfully!
+            </h1>
 
 
-                <div class="details">
-
-                    <h2>
-                        📦 Delivery Details
-                    </h2>
-
-                    <div class="detail-row">
-
-                        <span>
-                            Name
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.name || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            Mobile
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.phone || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            Address
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.address || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            City
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.city || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            State
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.state || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            Pincode
-                        </span>
-
-                        <span>
-                            ${escapeHTML(customer.pincode || '')}
-                        </span>
-
-                    </div>
-
-                    <div class="detail-row">
-
-                        <span>
-                            Order Date
-                        </span>
-
-                        <span>
-                            ${escapeHTML(orderDate)}
-                        </span>
-
-                    </div>
-
-                </div>
+            <p class="message">
+                Thank you for shopping with BazaarHub.
+                Your order has been received.
+            </p>
 
 
-                <div class="items">
+            <div class="order-id">
 
-                    <h2 style="margin-top:25px;">
-                        🛒 Ordered Products
-                    </h2>
+                <span>
+                    Order ID
+                </span>
 
-                    ${itemsHTML}
+                <strong>
+                    ${escapeHTML(order.id)}
+                </strong>
 
-                </div>
+            </div>
 
 
-                <div class="total">
+            <div class="details">
+
+                <h2>
+                    📦 Delivery Details
+                </h2>
+
+
+                <div class="detail-row">
 
                     <span>
-                        Total
+                        Name
                     </span>
 
                     <span>
-                        ₹${money(total)}
+                        ${escapeHTML(
+                            customer.name ||
+                            'Nothing'
+                        )}
                     </span>
 
                 </div>
 
 
-                <div class="cod">
-                    💵 Payment: Cash on Delivery
+                <div class="detail-row">
+
+                    <span>
+                        Mobile
+                    </span>
+
+                    <span>
+                        ${escapeHTML(
+                            customer.phone ||
+                            'Nothing'
+                        )}
+                    </span>
+
                 </div>
 
 
-                <div class="buttons">
+                <div class="detail-row">
 
-                    <a
-                        href="../index.html"
-                        class="btn shop-btn"
-                    >
-                        Continue Shopping
-                    </a>
+                    <span>
+                        Address
+                    </span>
 
-                    <a
-                        href="orders.html"
-                        class="btn orders-btn"
-                    >
-                        📋 My Orders
-                    </a>
+                    <span>
+                        ${escapeHTML(
+                            customer.address ||
+                            'Nothing'
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        City
+                    </span>
+
+                    <span>
+                        ${escapeHTML(
+                            customer.city ||
+                            'Nothing'
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        State
+                    </span>
+
+                    <span>
+                        ${escapeHTML(
+                            customer.state ||
+                            'Nothing'
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Pincode
+                    </span>
+
+                    <span>
+                        ${escapeHTML(
+                            customer.pincode ||
+                            'Nothing'
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Order Date
+                    </span>
+
+                    <span>
+                        ${escapeHTML(orderDate)}
+                    </span>
 
                 </div>
 
             </div>
 
-        `;
 
-    }
+            <div class="items">
+
+                <h2>
+                    🛒 Ordered Products
+                </h2>
+
+                ${itemsHTML}
+
+            </div>
 
 
-    document.addEventListener(
-        'DOMContentLoaded',
-        loadConfirmation
-    );
+            <div class="total">
+
+                <span>
+                    Total
+                </span>
+
+                <span>
+                    ₹${money(total)}
+                </span>
+
+            </div>
+
+
+            <div class="cod">
+                💵 Payment: Cash on Delivery
+            </div>
+
+
+            <div class="buttons">
+
+                <a
+                    href="../index.html"
+                    class="btn shop-btn"
+                >
+                    Continue Shopping
+                </a>
+
+
+                <a
+                    href="orders.html"
+                    class="btn orders-btn"
+                >
+                    📋 My Orders
+                </a>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// =====================================================
+// START
+// =====================================================
+
+document.addEventListener(
+    'DOMContentLoaded',
+    loadConfirmation
+);
 
 </script>
 
+
 </body>
-</html>
+
+    </html>
