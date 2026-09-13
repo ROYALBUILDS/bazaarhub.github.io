@@ -15,103 +15,279 @@
     <link rel="stylesheet" href="../css/responsive.css">
 
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background:
+                linear-gradient(
+                    180deg,
+                    #f8fafc 0%,
+                    #eef2f7 100%
+                );
+        }
+
+        /* ================================
+           PRODUCT PAGE
+        ================================= */
+
         .product-detail-page {
-            max-width: 1200px;
-            margin: 40px auto;
+            max-width: 1250px;
+            margin: 35px auto 70px;
             padding: 0 20px;
         }
 
         .back-link {
-            display: inline-block;
-            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 22px;
+            color: #475569;
             text-decoration: none;
-            color: #555;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s ease;
         }
+
+        .back-link:hover {
+            color: #111827;
+            transform: translateX(-3px);
+        }
+
+        /* ================================
+           MAIN PRODUCT CARD
+        ================================= */
 
         .product-detail {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
             gap: 45px;
-            background: #fff;
-            border-radius: 18px;
-            padding: 25px;
+
+            background: rgba(255,255,255,0.96);
+            border: 1px solid rgba(226,232,240,0.9);
+            border-radius: 28px;
+            padding: 30px;
+
+            box-shadow:
+                0 20px 60px rgba(15,23,42,0.08);
+        }
+
+        /* ================================
+           IMAGE AREA
+        ================================= */
+
+        .product-visual {
+            position: relative;
         }
 
         .product-detail-image {
             width: 100%;
             aspect-ratio: 1 / 1;
-            background: #f7f7f7;
-            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 35%,
+                    #ffffff 0%,
+                    #f8fafc 55%,
+                    #eef2f7 100%
+                );
+
+            border-radius: 22px;
             overflow: hidden;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
+            border: 1px solid #e5e7eb;
         }
 
         .product-detail-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            padding: 25px;
+
+            transition:
+                transform 0.45s ease;
+        }
+
+        .product-detail-image:hover img {
+            transform: scale(1.045);
         }
 
         .detail-placeholder {
-            font-size: 100px;
+            font-size: 110px;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+
+            padding: 9px 13px;
+            border-radius: 999px;
+
+            background: #111827;
+            color: white;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            box-shadow:
+                0 8px 20px rgba(15,23,42,0.18);
+        }
+
+        /* ================================
+           PRODUCT INFO
+        ================================= */
+
+        .product-detail-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
         }
 
         .detail-category {
-            color: #777;
-            font-size: 13px;
+            display: inline-flex;
+            width: fit-content;
+
+            padding: 7px 11px;
+            margin-bottom: 12px;
+
+            border-radius: 999px;
+            background: #f1f5f9;
+
+            color: #64748b;
+
+            font-size: 11px;
+            font-weight: 800;
+
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            letter-spacing: 1.2px;
         }
 
         .detail-title {
-            font-size: 32px;
-            line-height: 1.25;
-            margin: 0 0 12px;
+            margin: 0 0 13px;
+
+            color: #0f172a;
+
+            font-size: 38px;
+            line-height: 1.15;
+            letter-spacing: -0.8px;
         }
+
+        /* ================================
+           RATING
+        ================================= */
 
         .detail-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
             margin-bottom: 20px;
-        }
 
-        .detail-price {
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .detail-mrp {
-            color: #888;
-            text-decoration: line-through;
-            margin-left: 10px;
-        }
-
-        .detail-discount {
-            display: inline-block;
-            margin-left: 10px;
-            color: #008a4c;
+            color: #475569;
+            font-size: 14px;
             font-weight: 700;
         }
 
-        .detail-description {
-            color: #555;
-            line-height: 1.7;
-            margin: 20px 0;
+        .rating-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+
+            padding: 6px 9px;
+            border-radius: 7px;
+
+            background: #fef3c7;
+            color: #92400e;
+
+            font-size: 13px;
+            font-weight: 800;
         }
 
+        /* ================================
+           PRICE
+        ================================= */
+
+        .price-area {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            margin-bottom: 6px;
+        }
+
+        .detail-price {
+            color: #111827;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .detail-mrp {
+            color: #94a3b8;
+            text-decoration: line-through;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .detail-discount {
+            color: #15803d;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .price-note {
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* ================================
+           DESCRIPTION
+        ================================= */
+
+        .detail-description {
+            color: #475569;
+            line-height: 1.75;
+            font-size: 15px;
+
+            margin: 8px 0 22px;
+
+            max-width: 650px;
+        }
+
+        /* ================================
+           DIVIDER
+        ================================= */
+
+        .detail-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 3px 0 20px;
+        }
+
+        /* ================================
+           OPTIONS
+        ================================= */
+
         .detail-section {
-            margin-top: 22px;
+            margin-bottom: 20px;
         }
 
         .detail-section h3 {
-            margin-bottom: 10px;
-        }
+            margin: 0 0 10px;
 
-        .spec-list {
-            padding-left: 20px;
-            line-height: 1.9;
+            color: #111827;
+            font-size: 14px;
+            font-weight: 800;
         }
 
         .option-list {
@@ -121,112 +297,444 @@
         }
 
         .option {
-            border: 1px solid #ddd;
-            border-radius: 7px;
-            padding: 7px 12px;
+            padding: 8px 13px;
+
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+
+            background: #fff;
+
+            color: #475569;
             font-size: 13px;
+            font-weight: 600;
         }
+
+        /* ================================
+           SPECIFICATIONS
+        ================================= */
+
+        .spec-list {
+            margin: 0;
+            padding-left: 18px;
+
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .spec-list li {
+            padding-left: 3px;
+        }
+
+        /* ================================
+           STOCK
+        ================================= */
 
         .detail-stock {
-            margin: 18px 0;
+            display: inline-flex;
+            align-items: center;
+
+            width: fit-content;
+
+            margin: 3px 0 18px;
+            padding: 8px 11px;
+
+            border-radius: 8px;
+
+            background: #f0fdf4;
+            color: #15803d;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .out-stock {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        /* ================================
+           QUANTITY
+        ================================= */
+
+        .purchase-area {
+            margin-top: 4px;
+        }
+
+        .quantity-label {
+            display: block;
+            margin-bottom: 9px;
+
+            color: #111827;
             font-size: 14px;
+            font-weight: 800;
         }
 
-        .detail-cart-button {
-            width: 100%;
-            border: none;
+        .quantity-control {
+            display: inline-flex;
+            align-items: center;
+
+            height: 48px;
+
+            border: 1px solid #d7dee7;
             border-radius: 10px;
-            padding: 15px;
-            background: #ff6f00;
-            color: white;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
+
+            overflow: hidden;
+            background: white;
+
+            margin-bottom: 14px;
         }
 
-        .detail-cart-button:disabled {
-            background: #999;
-            cursor: not-allowed;
+        .quantity-btn {
+            width: 48px;
+            height: 100%;
+
+            border: none;
+            background: #f8fafc;
+
+            color: #111827;
+            font-size: 21px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
         }
+
+        .quantity-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .quantity-value {
+            width: 48px;
+
+            text-align: center;
+
+            color: #111827;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        /* ================================
+           BUTTONS
+        ================================= */
+
+        .product-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .product-action-btn {
+            min-height: 52px;
+
+            border: none;
+            border-radius: 11px;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .product-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .add-cart-btn {
+            background: #f1f5f9;
+            color: #111827;
+
+            border: 1px solid #dbe2ea;
+        }
+
+        .add-cart-btn:hover {
+            background: #e2e8f0;
+            box-shadow: 0 8px 18px rgba(15,23,42,0.08);
+        }
+
+        .buy-now-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #111827,
+                    #334155
+                );
+
+            color: white;
+
+            box-shadow:
+                0 10px 25px rgba(15,23,42,0.18);
+        }
+
+        .buy-now-btn:hover {
+            box-shadow:
+                0 14px 30px rgba(15,23,42,0.25);
+        }
+
+        .product-action-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ================================
+           TRUST INFO
+        ================================= */
+
+        .trust-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+
+            margin-top: 20px;
+        }
+
+        .trust-item {
+            padding: 12px 7px;
+
+            text-align: center;
+
+            border-radius: 10px;
+            background: #f8fafc;
+
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+
+            border: 1px solid #eef2f7;
+        }
+
+        .trust-item strong {
+            display: block;
+            margin-bottom: 3px;
+
+            color: #111827;
+            font-size: 12px;
+        }
+
+        /* ================================
+           ERROR
+        ================================= */
 
         .error-box {
+            max-width: 700px;
+            margin: 50px auto;
+
+            padding: 70px 25px;
+
             text-align: center;
-            padding: 70px 20px;
+
+            background: white;
+            border-radius: 22px;
+
+            box-shadow:
+                0 15px 40px rgba(15,23,42,0.08);
         }
 
-        @media (max-width: 700px) {
+        .error-box h2 {
+            color: #111827;
+        }
+
+        .error-box a {
+            color: #111827;
+            font-weight: 700;
+        }
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 900px) {
+
             .product-detail {
                 grid-template-columns: 1fr;
-                gap: 25px;
+                gap: 30px;
+            }
+
+            .product-detail-image {
+                max-width: 650px;
+                margin: auto;
+            }
+
+            .product-detail-info {
+                justify-content: flex-start;
+            }
+
+            .detail-title {
+                font-size: 32px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .product-detail-page {
+                margin-top: 20px;
+                padding: 0 12px;
+            }
+
+            .product-detail {
+                padding: 16px;
+                border-radius: 20px;
+                gap: 22px;
+            }
+
+            .product-detail-image {
+                border-radius: 17px;
+            }
+
+            .product-detail-image img {
                 padding: 15px;
             }
 
             .detail-title {
-                font-size: 25px;
+                font-size: 27px;
+                letter-spacing: -0.4px;
+            }
+
+            .detail-price {
+                font-size: 30px;
+            }
+
+            .detail-description {
+                font-size: 14px;
+            }
+
+            .product-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-row {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .trust-item {
+                font-size: 10px;
+            }
+
+        }
+
+        @media (max-width: 400px) {
+
+            .trust-row {
+                grid-template-columns: 1fr;
             }
 
             .detail-price {
                 font-size: 27px;
             }
+
         }
+
     </style>
 </head>
 
 <body>
 
+    <!-- ================================
+         NAVBAR
+    ================================= -->
+
     <nav class="navbar">
+
         <div class="nav-container">
 
             <div class="nav-logo">
-                <h1>🛍️ BazaarHub</h1>
+
+                <h1>
+                    🛍️ BazaarHub
+                </h1>
+
             </div>
 
             <ul class="nav-menu">
+
                 <li>
-                    <a href="../index.html" class="nav-link">
+                    <a
+                        href="../index.html"
+                        class="nav-link"
+                    >
                         🏠 Home
                     </a>
                 </li>
 
                 <li>
-                    <a href="cart.html" class="cart-link">
-                        🛒 Cart (<span id="cart-count">0</span>)
+                    <a
+                        href="cart.html"
+                        class="cart-link"
+                    >
+                        🛒 Cart
+                        (<span id="cart-count">0</span>)
                     </a>
                 </li>
+
             </ul>
 
         </div>
+
     </nav>
+
+
+    <!-- ================================
+         MAIN
+    ================================= -->
 
     <main class="product-detail-page">
 
-        <a href="../index.html" class="back-link">
+        <a
+            href="../index.html"
+            class="back-link"
+        >
             ← Back to Shopping
         </a>
 
+
         <div id="productContainer">
+
             <div class="error-box">
                 Loading product...
             </div>
+
         </div>
 
     </main>
 
+
     <script src="../js/database.js"></script>
     <script src="../js/cart.js"></script>
+
 
     <script>
 
         let currentProduct = null;
+        let selectedQuantity = 1;
+
+
+        /* =================================
+           ESCAPE HTML
+        ================================= */
 
         function escapeHTML(value) {
+
             return String(value ?? '')
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+
         }
+
+
+        /* =================================
+           IMAGE
+        ================================= */
 
         function getProductImage(product) {
 
@@ -246,62 +754,116 @@
             }
 
             return '';
+
         }
+
 
         function isImageSource(value) {
 
-            if (!value) return false;
+            if (!value) {
+                return false;
+            }
 
             return (
+
                 value.startsWith('http://') ||
+
                 value.startsWith('https://') ||
-                /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(value)
+
+                value.startsWith('/') ||
+
+                value.startsWith('./') ||
+
+                value.startsWith('../') ||
+
+                /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i
+                    .test(value)
+
             );
+
         }
+
+
+        /* =================================
+           DISCOUNT
+        ================================= */
 
         function getDiscount(price, mrp) {
 
-            if (!price || !mrp || mrp <= price) {
+            if (
+                !price ||
+                !mrp ||
+                mrp <= price
+            ) {
                 return 0;
             }
 
             return Math.round(
                 ((mrp - price) / mrp) * 100
             );
+
         }
+
+
+        /* =================================
+           LOAD PRODUCT
+        ================================= */
 
         async function loadProduct() {
 
             const container =
-                document.getElementById('productContainer');
+                document.getElementById(
+                    'productContainer'
+                );
+
 
             const params =
-                new URLSearchParams(window.location.search);
+                new URLSearchParams(
+                    window.location.search
+                );
+
 
             const productId =
                 params.get('id');
 
+
             if (!productId) {
-                showError('Product ID not found.');
+
+                showError(
+                    'Product ID not found.'
+                );
+
                 return;
+
             }
+
 
             try {
 
                 const response =
-                    await fetch('../data/products.json');
+                    await fetch(
+                        '../data/products.json'
+                    );
+
 
                 if (!response.ok) {
-                    throw new Error('Unable to load products');
+
+                    throw new Error(
+                        'Unable to load products'
+                    );
+
                 }
+
 
                 const data =
                     await response.json();
+
 
                 const products =
                     Array.isArray(data.products)
                         ? data.products
                         : [];
+
 
                 currentProduct =
                     products.find(
@@ -310,12 +872,24 @@
                             Number(productId)
                     );
 
+
                 if (!currentProduct) {
-                    showError('Product not found.');
+
+                    showError(
+                        'Product not found.'
+                    );
+
                     return;
+
                 }
 
-                renderProduct(currentProduct);
+
+                selectedQuantity = 1;
+
+                renderProduct(
+                    currentProduct
+                );
+
 
             } catch (error) {
 
@@ -324,34 +898,60 @@
                 showError(
                     'Unable to load this product.'
                 );
+
             }
+
         }
+
+
+        /* =================================
+           RENDER PRODUCT
+        ================================= */
 
         function renderProduct(product) {
 
             const container =
-                document.getElementById('productContainer');
+                document.getElementById(
+                    'productContainer'
+                );
+
 
             const price =
                 Number(product.price) || 0;
 
+
             const mrp =
-                Number(product.mrp || product.originalPrice) || 0;
+                Number(
+                    product.mrp ||
+                    product.originalPrice
+                ) || 0;
+
 
             const discount =
-                getDiscount(price, mrp);
+                getDiscount(
+                    price,
+                    mrp
+                );
+
 
             const image =
                 getProductImage(product);
 
+
             let imageHTML;
+
 
             if (isImageSource(image)) {
 
                 imageHTML = `
+
                     <img
                         src="${escapeHTML(image)}"
-                        alt="${escapeHTML(product.title)}"
+                        alt="${escapeHTML(
+                            product.title ||
+                            product.name ||
+            'Product'
+                        )}"
                     >
                 `;
 
@@ -386,16 +986,19 @@
                 Number.isFinite(stock) && stock <= 0;
 
             document.title =
-                `${product.title} | BazaarHub`;
+                `${product.title || product.name || 'Product'} | BazaarHub`;
 
             container.innerHTML = `
 
                 <div class="product-detail">
 
+                    <!-- PRODUCT IMAGE -->
                     <div class="product-detail-image">
                         ${imageHTML}
                     </div>
 
+
+                    <!-- PRODUCT INFORMATION -->
                     <div class="product-detail-info">
 
                         <div class="detail-category">
@@ -406,25 +1009,37 @@
 
                         <h1 class="detail-title">
                             ${escapeHTML(
-                                product.title || product.name
+                                product.title ||
+                                product.name ||
+                                'Product'
                             )}
                         </h1>
 
+
+                        <!-- RATING -->
                         <div class="detail-rating">
+
                             ⭐ ${escapeHTML(
                                 product.rating || '4.5'
                             )}
 
                             ${
                                 product.reviews
-                                    ? `(${escapeHTML(
-                                        product.reviews
-                                    )} reviews)`
+                                    ? `
+                                        <span>
+                                            (${escapeHTML(
+                                                product.reviews
+                                            )} reviews)
+                                        </span>
+                                    `
                                     : ''
                             }
+
                         </div>
 
-                        <div>
+
+                        <!-- PRICE -->
+                        <div class="detail-price-box">
 
                             <span class="detail-price">
                                 ₹${price.toLocaleString('en-IN')}
@@ -452,133 +1067,297 @@
 
                         </div>
 
+
+                        <!-- DESCRIPTION -->
                         <p class="detail-description">
                             ${escapeHTML(
-                                product.description || ''
+                                product.description ||
+                                'No description available for this product.'
                             )}
                         </p>
 
+
+                        <!-- COLORS -->
                         ${
                             colors.length
                                 ? `
                                     <div class="detail-section">
-                                        <h3>Available Colors</h3>
+
+                                        <h3>
+                                            🎨 Available Colors
+                                        </h3>
 
                                         <div class="option-list">
+
                                             ${colors.map(
-                                                color =>
-                                                    `<span class="option">
+                                                color => `
+                                                    <span class="option">
                                                         ${escapeHTML(color)}
-                                                    </span>`
+                                                    </span>
+                                                `
                                             ).join('')}
+
                                         </div>
+
                                     </div>
                                 `
                                 : ''
                         }
 
+
+                        <!-- SIZES -->
                         ${
                             sizes.length
                                 ? `
                                     <div class="detail-section">
-                                        <h3>Available Sizes</h3>
+
+                                        <h3>
+                                            📏 Available Sizes
+                                        </h3>
 
                                         <div class="option-list">
+
                                             ${sizes.map(
-                                                size =>
-                                                    `<span class="option">
+                                                size => `
+                                                    <span class="option">
                                                         ${escapeHTML(size)}
-                                                    </span>`
+                                                    </span>
+                                                `
                                             ).join('')}
+
                                         </div>
+
                                     </div>
                                 `
                                 : ''
                         }
 
+
+                        <!-- SPECIFICATIONS -->
                         ${
                             specifications.length
                                 ? `
                                     <div class="detail-section">
-                                        <h3>Specifications</h3>
+
+                                        <h3>
+                                            ✨ Specifications
+                                        </h3>
 
                                         <ul class="spec-list">
+
                                             ${specifications.map(
-                                                spec =>
-                                                    `<li>
+                                                spec => `
+                                                    <li>
                                                         ${escapeHTML(spec)}
-                                                    </li>`
+                                                    </li>
+                                                `
                                             ).join('')}
+
                                         </ul>
+
                                     </div>
                                 `
                                 : ''
                         }
 
+
+                        <!-- STOCK -->
                         ${
                             Number.isFinite(stock)
                                 ? `
                                     <div class="detail-stock">
+
                                         ${
                                             stock > 0
-                                                ? `📦 ${stock} items available`
-                                                : '❌ Out of stock'
+                                                ? `
+                                                    <span>
+                                                        📦 ${stock} items available
+                                                    </span>
+                                                `
+                                                : `
+                                                    <span>
+                                                        ❌ Out of stock
+                                                    </span>
+                                                `
                                         }
+
                                     </div>
                                 `
                                 : ''
                         }
 
-                        <button
-                            class="detail-cart-button"
-                            onclick="addProductToCart()"
-                            ${outOfStock ? 'disabled' : ''}
-                        >
-                            ${
-                                outOfStock
-                                    ? 'Out of Stock'
-                                    : '🛒 Add to Cart'
-                            }
-                        </button>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="product-actions">
+
+                            <button
+                                class="detail-cart-button"
+                                onclick="addProductToCart()"
+                                ${outOfStock ? 'disabled' : ''}
+                            >
+
+                                ${
+                                    outOfStock
+                                        ? '❌ Out of Stock'
+                                        : '🛒 Add to Cart'
+                                }
+
+                            </button>
+
+
+                            <button
+                                class="detail-buy-button"
+                                onclick="buyProductNow()"
+                                ${outOfStock ? 'disabled' : ''}
+                            >
+
+                                ${
+                                    outOfStock
+                                        ? 'Unavailable'
+                                        : '⚡ Buy Now'
+                                }
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- TRUST FEATURES -->
+                        <div class="product-trust">
+
+                            <div class="trust-item">
+                                🚚
+                                <span>
+                                    <strong>Fast Delivery</strong>
+                                    <small>Quick doorstep delivery</small>
+                                </span>
+                            </div>
+
+                            <div class="trust-item">
+                                💵
+                                <span>
+                                    <strong>Cash on Delivery</strong>
+                                    <small>Pay when you receive</small>
+                                </span>
+                            </div>
+
+                            <div class="trust-item">
+                                🔒
+                                <span>
+                                    <strong>Secure Shopping</strong>
+                                    <small>Safe & reliable checkout</small>
+                                </span>
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
+
             `;
         }
 
+
+        // =====================================================
+        // ADD PRODUCT TO CART
+        // =====================================================
+
         function addProductToCart() {
 
-            if (!currentProduct) return;
+            if (!currentProduct) {
+                return;
+            }
 
-            if (typeof addToCart === 'function') {
+            if (
+                typeof addToCart ===
+                'function'
+            ) {
 
                 addToCart(
                     Number(currentProduct.id)
                 );
+
+                if (
+                    typeof updateCartCount ===
+                    'function'
+                ) {
+                    updateCartCount();
+                }
 
             } else {
 
                 alert(
                     'Cart is currently unavailable.'
                 );
+
             }
         }
+
+
+        // =====================================================
+        // BUY NOW
+        // =====================================================
+
+        function buyProductNow() {
+
+            if (!currentProduct) {
+                return;
+            }
+
+            const product = {
+                ...currentProduct,
+                quantity: 1
+            };
+
+            sessionStorage.setItem(
+                'bazaarhubBuyNow',
+                JSON.stringify(product)
+            );
+
+            window.location.href =
+                'checkout.html';
+        }
+
+
+        // =====================================================
+        // SHOW ERROR
+        // =====================================================
 
         function showError(message) {
 
             document.getElementById(
                 'productContainer'
             ).innerHTML = `
+
                 <div class="error-box">
-                    <h2>😕 ${escapeHTML(message)}</h2>
+
+                    <div style="font-size:60px;">
+                        😕
+                    </div>
+
+                    <h2>
+                        ${escapeHTML(message)}
+                    </h2>
+
                     <br>
-                    <a href="../index.html">
+
+                    <a
+                        href="../index.html"
+                        class="back-link"
+                    >
                         ← Back to BazaarHub
                     </a>
+
                 </div>
+
             `;
         }
+
+
+        // =====================================================
+        // PAGE LOAD
+        // =====================================================
 
         document.addEventListener(
             'DOMContentLoaded',
@@ -588,10 +1367,13 @@
                     typeof updateCartCount ===
                     'function'
                 ) {
+
                     updateCartCount();
+
                 }
 
                 loadProduct();
+
             }
         );
 
